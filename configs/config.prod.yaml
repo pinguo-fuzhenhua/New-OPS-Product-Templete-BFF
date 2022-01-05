@@ -1,0 +1,5 @@
+http:
+  address: 0.0.0.0:8000
+  timeout: 30s
+params:
+  ArticleSvcAddr: dsn:///localhost:9000

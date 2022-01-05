@@ -1,0 +1,9 @@
+**
+# !**/*.go
+!api
+!cmd
+!internal
+!configs
+!go.mod
+!go.sum
+!Makefile
