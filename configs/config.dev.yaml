@@ -1,0 +1,10 @@
+app:
+    env: &appEnv dev
+clientSet:
+    fieldDef: dns:///localhost:9000
+    operationalPos: dns:///localhost:9002
+    material: dns:///localhost:9004
+trace:
+    jaeger:
+        endpoint: http://192.168.1.233:31358/api/traces
+    env: *appEnv

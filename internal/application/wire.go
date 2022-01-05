@@ -2,7 +2,7 @@ package application
 
 import (
 	"github.com/google/wire"
-	"github.com/pinguo-icc/template/internal/infrastructure/server"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
 )
 
 var ProviderSet = wire.NewSet(

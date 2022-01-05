@@ -2,15 +2,16 @@ package server
 
 import (
 	"context"
-	"strings"
+	"fmt"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/gorilla/handlers"
-	"github.com/pinguo-icc/template/internal/infrastructure/conf"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Register interface {
@@ -18,7 +19,7 @@ type Register interface {
 }
 
 // New new a bm server.
-func NewHttpServer(config *conf.HTTP, logger log.Logger, r Register) (*khttp.Server, func()) {
+func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logger log.Logger, r Register) (*khttp.Server, func()) {
 	loggerWithMethod := log.With(
 		logger,
 		"method",
@@ -35,6 +36,13 @@ func NewHttpServer(config *conf.HTTP, logger log.Logger, r Register) (*khttp.Ser
 			}
 			return ""
 		}),
+		"c_params",
+		log.Valuer(func(ctx context.Context) interface{} {
+			if p := cparam.FromContext(ctx); p != nil {
+				return fmt.Sprintf("%+v", p)
+			}
+			return ""
+		}),
 	)
 
 	var opts = []khttp.ServerOption{
@@ -46,7 +54,8 @@ func NewHttpServer(config *conf.HTTP, logger log.Logger, r Register) (*khttp.Ser
 			logging.Server(loggerWithMethod),
 		),
 		khttp.Filter(
-			cors(),
+			traceFilter(tracerProvider),
+			cparam.Filter(),
 		),
 	}
 
@@ -63,17 +72,4 @@ func NewHttpServer(config *conf.HTTP, logger log.Logger, r Register) (*khttp.Ser
 	}
 
 	return svc, cancelFn
-}
-
-func cors() khttp.FilterFunc {
-	return handlers.CORS(
-		handlers.AllowedOriginValidator(func(s string) bool {
-			return strings.Contains(s, "camera360.com")
-		}),
-		handlers.AllowedMethods([]string{"GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"}),
-		handlers.AllowCredentials(),
-		handlers.AllowedHeaders([]string{
-			"DNT", "X-CustomHeader", "Keep-Alive", "User-Agent", "X-Requested-With", "If-Modified-Since", "Cache-Control", "Content-Type", "Authorization",
-		}),
-	)
 }

@@ -1,7 +1,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: kratos-template-bff-configmap
-  namespace: kratos-template-namespace
+  namespace: camera360
+  name: camera360-bff-configmap
 data:
   loglevel: "info"

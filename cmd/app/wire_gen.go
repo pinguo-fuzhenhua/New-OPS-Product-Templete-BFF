@@ -8,18 +8,21 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pinguo-icc/template/internal/application"
-	"github.com/pinguo-icc/template/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/template/internal/infrastructure/conf"
-	"github.com/pinguo-icc/template/internal/infrastructure/server"
+	"github.com/pinguo-icc/Camera360/internal/application"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
 // Injectors from wire.go:
 
 func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
 	http := bootstrap.Http
-	params := bootstrap.Params
-	clientSet, cleanup, err := clientset.NewClientSet(params, logger)
+	config := bootstrap.Trace
+	tracerProvider := trace.NewTracerProvider(config)
+	confClientset := bootstrap.Clientset
+	clientSet, cleanup, err := clientset.NewClientSet(confClientset, logger, tracerProvider)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -29,8 +32,8 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	routerDefines := &application.RouterDefines{
 		E: example,
 	}
-	httpServer, cleanup2 := server.NewHttpServer(http, logger, routerDefines)
-	app := newApp(logger, httpServer)
+	httpServer, cleanup2 := server.NewHttpServer(http, tracerProvider, logger, routerDefines)
+	app := newApp(bootstrap, logger, httpServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

@@ -2,7 +2,7 @@ package application
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/pinguo-icc/template/internal/infrastructure/server"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
 
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 )

@@ -4,16 +4,18 @@ import (
 	"time"
 
 	lconfig "github.com/pinguo-icc/kratos-library/v2/conf"
+	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
 type Bootstrap struct {
-	Http   *HTTP
-	Params *Params
+	App       *App
+	Http      *HTTP
+	Trace     *trace.Config
+	Clientset *Clientset
+	Params    *Params
 }
 
-type Params struct {
-	ArticleSvcAddr string
-}
+type Params struct{}
 
 func Load(env string) (*Bootstrap, error) {
 	out := new(Bootstrap)
@@ -24,4 +26,15 @@ func Load(env string) (*Bootstrap, error) {
 type HTTP struct {
 	Address string
 	Timeout time.Duration
+}
+
+type App struct {
+	Name string
+	Env  string
+}
+
+type Clientset struct {
+	FieldDef       string
+	OperationalPos string
+	Material       string
 }

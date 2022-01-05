@@ -2,7 +2,7 @@ package application
 
 import (
 	"github.com/go-kratos/kratos/v2/errors"
-	"github.com/pinguo-icc/template/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 )
 
 type Example struct {

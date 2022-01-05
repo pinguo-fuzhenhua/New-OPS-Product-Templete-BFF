@@ -1,5 +1,22 @@
+app:
+    name: &appName camera360-bff
+    env: &appEnv prod
 http:
-  address: 0.0.0.0:8000
-  timeout: 30s
+    address: 0.0.0.0:8000
+    timeout: 30s
+trace:
+    jaeger:
+        endpoint: http://10.0.5.176:14268/api/traces
+    aliConfig:
+        project: ""
+        instanceId: ""
+        endpoint: ""
+        accessKey: ""
+        accessSecret: ""
+    name: *appName
+    env: *appEnv
+clientSet:
+    fieldDef: dns:///field-definitions:9000
+    operationalPos: dns:///operational-positions:9000
+    material: dns:///operations-materials:9000
 params:
-  ArticleSvcAddr: dsn:///localhost:9000
