@@ -2,9 +2,6 @@
   path: /spec/template/spec/containers/0/command/2
   value: qa
 - op: replace
-  path: /spec/template/spec/containers/0/env/0/
-  value: qa
-- op: replace
   path: /spec/replicas
   value: 1
 - op: replace
