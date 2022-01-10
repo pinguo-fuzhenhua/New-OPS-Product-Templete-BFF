@@ -10,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/pinguo-icc/Camera360/internal/application"
+	"github.com/pinguo-icc/Camera360/internal/domain"
 	infra "github.com/pinguo-icc/Camera360/internal/infrastructure"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 )
@@ -18,6 +19,7 @@ func initApp(*conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(
 		infra.ProviderSet,
 
+		domain.ProviderSet,
 		application.ProviderSet,
 		newApp,
 	))

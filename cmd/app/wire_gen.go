@@ -9,6 +9,8 @@ import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/pinguo-icc/Camera360/internal/application"
+	"github.com/pinguo-icc/Camera360/internal/application/v1"
+	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
@@ -26,11 +28,15 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	example := &application.Example{
+	fieldDefinitionsClient := clientSet.FieldDefinitionsClient
+	parserFactory := domain.NewParserFactory(fieldDefinitionsClient)
+	activitiesParser := domain.NewActivitiesParser(parserFactory)
+	operationalPos := &v1.OperationalPos{
 		ClientSet: clientSet,
+		Parser:    activitiesParser,
 	}
 	routerDefines := &application.RouterDefines{
-		E: example,
+		OPos: operationalPos,
 	}
 	httpServer, cleanup2 := server.NewHttpServer(http, tracerProvider, logger, routerDefines)
 	app := newApp(bootstrap, logger, httpServer)

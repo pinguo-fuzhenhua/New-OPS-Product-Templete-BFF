@@ -3,8 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/encoding"
+	"github.com/go-kratos/kratos/v2/encoding/json"
+	kerr "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -49,6 +53,7 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 		khttp.Logger(logger),
 		khttp.Address(config.Address),
 		khttp.Timeout(config.Timeout),
+		khttp.ErrorEncoder(buildErrorEncoder(logger)),
 		khttp.Middleware(
 			recovery.Recovery(recovery.WithLogger(loggerWithMethod)),
 			logging.Server(loggerWithMethod),
@@ -72,4 +77,27 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 	}
 
 	return svc, cancelFn
+}
+
+func buildErrorEncoder(logger log.Logger) khttp.EncodeErrorFunc {
+	var errCodec = encoding.GetCodec(json.Name)
+
+	return func(w http.ResponseWriter, r *http.Request, err error) {
+		type errResp struct {
+			Code    int    `json:"code"`
+			Message string `json:"message"`
+		}
+		se := kerr.FromError(err)
+		resp := &errResp{Code: int(se.Code), Message: se.Message}
+		body, merr := errCodec.Marshal(resp)
+		if merr != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.WithContext(r.Context(), logger).Log(log.LevelError, "b_err", err, "e_err", merr)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(int(se.Code))
+		wlen, werr := w.Write(body)
+		log.WithContext(r.Context(), logger).Log(log.LevelWarn, "b_err", err, "w_len", wlen, "w_err", werr)
+	}
 }

@@ -1,7 +1,13 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  namespace: camera360
+  namespace: app-camera360
   name: camera360-bff-configmap
 data:
-  loglevel: "info"
+  qiniu.accessKey: ak
+  qiniu.secretKey: sk
+  trace.aliConfig.accessKey: ""
+  trace.aliConfig.accessSecret: ""
+  trace.aliConfig.endpoint: ""
+  trace.aliConfig.instanceId: ops-trace-prod
+  trace.aliConfig.project: ops-trace-prod

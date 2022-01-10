@@ -3,6 +3,7 @@ package conf
 import (
 	"time"
 
+	"github.com/pinguo-icc/go-lib/v2/uploader/qiniu"
 	lconfig "github.com/pinguo-icc/kratos-library/v2/conf"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
@@ -12,6 +13,7 @@ type Bootstrap struct {
 	Http      *HTTP
 	Trace     *trace.Config
 	Clientset *Clientset
+	Qiniu     *qiniu.Config
 	Params    *Params
 }
 

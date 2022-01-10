@@ -2,6 +2,7 @@ package application
 
 import (
 	"github.com/gorilla/mux"
+	v1 "github.com/pinguo-icc/Camera360/internal/application/v1"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
 
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
@@ -16,7 +17,7 @@ func PathParam(ctx Context, name string) (val string, ok bool) {
 }
 
 type RouterDefines struct {
-	E *Example
+	OPos *v1.OperationalPos
 }
 
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
@@ -24,11 +25,6 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 
 	v1 := r.Group("/v1")
 	{
-		{
-			b := v1.Group("/example")
-
-			b.GET("/", H(rd.E.Get))
-			b.POST("/", H(rd.E.Post))
-		}
+		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
 	}
 }

@@ -5,6 +5,8 @@ http:
     address: 0.0.0.0:8000
     timeout: 30s
 trace:
+    name: *appName
+    env: *appEnv
     jaeger:
         endpoint: http://10.0.5.176:14268/api/traces
     aliConfig:
@@ -13,10 +15,14 @@ trace:
         endpoint: ""
         accessKey: ""
         accessSecret: ""
-    name: *appName
-    env: *appEnv
+qiniu:
+    accessKey: ""
+    secretKey: ""
+    bucket: operations-placing-system
+    url: https://ops.c360dn.com
+    isPrivate: false
 clientSet:
-    fieldDef: dns:///field-definitions:9000
-    operationalPos: dns:///operational-positions:9000
-    material: dns:///operations-materials:9000
+    fieldDef: dns:///field-definitions.operation-placing-system:9000
+    operationalPos: dns:///operational-positions.operation-placing-system:9000
+    material: dns:///operations-materials.operation-placing-system:9000
 params:

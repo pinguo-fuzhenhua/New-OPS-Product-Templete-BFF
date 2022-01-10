@@ -5,6 +5,12 @@ clientSet:
     operationalPos: dns:///localhost:9002
     material: dns:///localhost:9004
 trace:
+    env: *appEnv
     jaeger:
         endpoint: http://192.168.1.233:31358/api/traces
-    env: *appEnv
+qiniu:
+    accessKey: IAM-Ej1TW2KrVqRIOkIqZVEPta_yLmnUc8-1LySvtWCb
+    secretKey: vLw21BLiVx75oqMzbb3To1C1L6Tajtb7m7bRVpOK_4MF
+    bucket: qa-c360
+    url: https://cdn-qa-all.c360dn.com
+    isPrivate: false
