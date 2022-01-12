@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -41,12 +40,7 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 			return ""
 		}),
 		"c_params",
-		log.Valuer(func(ctx context.Context) interface{} {
-			if p := cparam.FromContext(ctx); p != nil {
-				return fmt.Sprintf("%+v", p)
-			}
-			return ""
-		}),
+		cparam.LogValuer,
 	)
 
 	var opts = []khttp.ServerOption{

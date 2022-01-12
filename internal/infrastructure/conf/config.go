@@ -8,6 +8,8 @@ import (
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
+const Scope = "Camera360"
+
 type Bootstrap struct {
 	App       *App
 	Http      *HTTP

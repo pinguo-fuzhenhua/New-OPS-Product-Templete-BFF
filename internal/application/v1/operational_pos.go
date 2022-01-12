@@ -8,6 +8,7 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
@@ -37,7 +38,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 	}
 
 	in := &opapi.PlacingRequest{
-		Scope:         "Camera360",
+		Scope:         conf.Scope,
 		PosCodes:      strings.Split(posCodes, ","),
 		Platform:      cp.Platform,
 		ClientVersion: int64(cVer),

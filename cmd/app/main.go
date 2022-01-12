@@ -47,10 +47,7 @@ func main() {
 	klog := newLogger(env)
 	defer klog.Sync()
 
-	logger := log.With(klog,
-		"ts", log.DefaultTimestamp,
-		"trace_id", tracing.TraceID(),
-	)
+	logger := log.With(klog, "trace_id", tracing.TraceID())
 
 	app, cleanup, err := initApp(cfg, logger)
 	if err != nil {

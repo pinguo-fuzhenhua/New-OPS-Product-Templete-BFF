@@ -2,9 +2,11 @@ package cparam
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
+	klog "github.com/go-kratos/kratos/v2/log"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	baseparam "github.com/pinguo-icc/go-base/v2/param"
 )
@@ -47,5 +49,16 @@ func Filter() khttp.FilterFunc {
 			r = r.WithContext(Store(r.Context(), New(r)))
 			next.ServeHTTP(rw, r)
 		})
+	}
+}
+
+var LogValuer = logValuer()
+
+func logValuer() klog.Valuer {
+	return func(ctx context.Context) interface{} {
+		if p := FromContext(ctx); p != nil {
+			return fmt.Sprintf("%+v", p)
+		}
+		return ""
 	}
 }
