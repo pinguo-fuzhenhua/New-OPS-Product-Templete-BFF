@@ -46,8 +46,9 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 			UserId:   cp.UserID,
 			DeviceId: cp.EID,
 			Properties: map[string]string{
-				"language": cp.Language,
-				"locale":   cp.Locale,
+				"language":  cp.Language,
+				"locale":    cp.Locale,
+				"vipstatus": ctx.Form().Get("vipStatus"),
 			},
 		},
 	}
@@ -56,6 +57,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		b, err := strconv.ParseBool(isNewUser)
 		if err == nil {
 			in.UserData.IsNewUser = wrapperspb.Bool(b)
+			in.UserData.Properties["fornewuser"] = isNewUser
 		}
 	}
 
