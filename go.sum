@@ -457,6 +457,8 @@ github.com/pinguo-icc/field-definitions v0.0.0-20220124112348-e08647bfb8b0 h1:2/
 github.com/pinguo-icc/field-definitions v0.0.0-20220124112348-e08647bfb8b0/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
 github.com/pinguo-icc/field-definitions v0.0.0-20220126094534-cc8b142a487a h1:YQj+/SXS7euXpXOxTEzFtYGCB+R9HRkP+3tu+oSONf8=
 github.com/pinguo-icc/field-definitions v0.0.0-20220126094534-cc8b142a487a/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
+github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68 h1:eX+sbzFZOXHmwB81VmRqMfZFzJ95GKCTz3D2xef0SVM=
+github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
 github.com/pinguo-icc/go-base/v2 v2.5.1/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
 github.com/pinguo-icc/go-base/v2 v2.5.3 h1:en4M6GIxeyKVlfj9pPWGDNuBvdAQ1rZPz0rvXJPTScM=
 github.com/pinguo-icc/go-base/v2 v2.5.3/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=

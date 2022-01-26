@@ -7,7 +7,7 @@ require (
 	github.com/go-kratos/kratos/v2 v2.1.4
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/pinguo-icc/field-definitions v0.0.0-20220126094534-cc8b142a487a
+	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
 	github.com/pinguo-icc/go-base/v2 v2.5.3
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.7
