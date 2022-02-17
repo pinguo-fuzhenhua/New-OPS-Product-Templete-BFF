@@ -11,7 +11,7 @@ require (
 	github.com/pinguo-icc/go-base/v2 v2.5.3
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.7
-	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220105030508-0d224cbe6e3c
+	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220217030551-106c84384921
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.3.0
 	go.opentelemetry.io/otel/trace v1.3.0

@@ -38,13 +38,15 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 	}
 
 	in := &opapi.PlacingRequest{
+		Prefetch:      72,
 		Scope:         conf.Scope,
 		PosCodes:      strings.Split(posCodes, ","),
 		Platform:      cp.Platform,
 		ClientVersion: int64(cVer),
 		UserData: &opapi.UserData{
-			UserId:   cp.UserID,
-			DeviceId: cp.EID,
+			UserId:    cp.UserID,
+			DeviceId:  cp.EID,
+			UtcOffset: int32(cp.UtcOffset),
 			Properties: map[string]string{
 				"language":  cp.Language,
 				"locale":    cp.Locale,
