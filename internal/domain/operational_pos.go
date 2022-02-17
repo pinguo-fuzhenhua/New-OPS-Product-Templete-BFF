@@ -171,7 +171,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
 					return nil, err
 				}
-				outPlans[j].Activities[i] = tmp
+				outPlans[i].Activities[j] = tmp
 			}
 		}
 
