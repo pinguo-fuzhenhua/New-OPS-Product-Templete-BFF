@@ -41,7 +41,8 @@ type Activity struct {
 }
 
 type period struct {
-	Begin, End int64
+	Begin int64 `json:"begin"`
+	End   int64 `json:"end"`
 }
 
 var parseOpts = []fdpkg.ParseOption{
