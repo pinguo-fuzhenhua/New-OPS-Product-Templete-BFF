@@ -21,6 +21,13 @@ func NewParserFactory(c fdapi.FieldDefinitionsClient) *fdpkg.ParserFactory {
 
 var _ json.Marshaler = (*Activity)(nil)
 
+type ActivityPlan struct {
+	ID         string      `json:"id"`
+	Name       string      `json:"name"`
+	Period     period      `json:"period"`
+	Activities []*Activity `json:"activities"`
+}
+
 // Activity an activity with contents
 type Activity struct {
 	ID        string
@@ -120,18 +127,26 @@ func NewActivitiesParser(p *fdpkg.ParserFactory) *ActivitiesParser {
 	return &ActivitiesParser{pFac: p}
 }
 
-func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Activities) (map[string][]*Activity, error) {
+func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
 	fps, err := ap.getFieldParser(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 
-	res := make(map[string][]*Activity, len(data))
-	for k, v := range data {
-		vv := v.Data
-		if len(vv) > 0 {
-			activities := make([]*Activity, len(vv))
-			for i, ac := range vv {
+	res := make(map[string][]*ActivityPlan, len(data))
+	for posCode, pPlan := range data {
+		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
+		for i, plan := range pPlan.Plans {
+			outPlans[i] = &ActivityPlan{
+				ID:   plan.Id,
+				Name: plan.Name,
+				Period: period{
+					Begin: plan.Period.GetBegin(),
+					End:   plan.Period.GetEnd(),
+				},
+				Activities: make([]*Activity, len(plan.Activities)),
+			}
+			for j, ac := range plan.Activities {
 				if fps[ac.FieldDefCode] == nil {
 					return nil, fmt.Errorf("domain: ActivitiesParser#Parse field parse not found, fieldDefCode=%s", ac.FieldDefCode)
 				}
@@ -156,27 +171,29 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
 					return nil, err
 				}
-				activities[i] = tmp
+				outPlans[j].Activities[i] = tmp
 			}
-
-			res[k] = activities
 		}
+
+		res[posCode] = outPlans
 	}
 
 	return res, nil
 }
 
-func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]*oppapi.PlacingResponse_Activities) (map[string]*fdpkg.Parser, error) {
+func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]*oppapi.PlacingResponse_Plans) (map[string]*fdpkg.Parser, error) {
 	dataset := make(map[string]struct{}, 8)
 	fDefIDs := make([]string, 0, 8)
-	for _, v := range data {
-		for _, vv := range v.Data {
-			if _, ok := dataset[vv.FieldDefCode]; ok {
-				continue
+	for _, pPlans := range data {
+		for _, p := range pPlans.Plans {
+			for _, ac := range p.Activities {
+				if _, ok := dataset[ac.FieldDefCode]; ok {
+					continue
+				}
+				dataset[ac.FieldDefCode] = struct{}{}
+				fDefIDs = append(fDefIDs, ac.FieldDefCode)
 			}
 
-			dataset[vv.FieldDefCode] = struct{}{}
-			fDefIDs = append(fDefIDs, vv.FieldDefCode)
 		}
 	}
 
