@@ -63,6 +63,14 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		}
 	}
 
+	// 获取预览功能配置的灰度流量组
+	// 该 header 参数一般由预览功能的实现组件完成写入（当前在网关写入）
+	if fg := ctx.Header().Get("X-Force-Gray-Group"); fg != "" {
+		if v, err := strconv.Atoi(fg); err != nil && v > 0 {
+			in.UserData.ForceGrayGroup = uint32(v)
+		}
+	}
+
 	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
 	if err != nil {
 		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
