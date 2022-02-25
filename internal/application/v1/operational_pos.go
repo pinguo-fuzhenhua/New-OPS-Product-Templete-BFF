@@ -8,7 +8,6 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
@@ -39,7 +38,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 
 	in := &opapi.PlacingRequest{
 		Prefetch:      72,
-		Scope:         conf.Scope,
+		Scope:         cp.AppID,
 		PosCodes:      strings.Split(posCodes, ","),
 		Platform:      cp.Platform,
 		ClientVersion: int64(cVer),
@@ -62,14 +61,16 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 			in.UserData.Properties["fornewuser"] = isNewUser
 		}
 	}
-
-	// 获取预览功能配置的灰度流量组
-	// 该 header 参数一般由预览功能的实现组件完成写入（当前在网关写入）
-	if fg := ctx.Header().Get("X-Force-Gray-Group"); fg != "" {
-		if v, err := strconv.Atoi(fg); err != nil && v > 0 {
-			in.UserData.ForceGrayGroup = uint32(v)
+	if in.UserData.IsNewUser == nil {
+		v := domain.IsNewUser(cp, ctx.Request())
+		in.UserData.IsNewUser = wrapperspb.Bool(v)
+		in.UserData.Properties["fornewuser"] = "0"
+		if v {
+			in.UserData.Properties["fornewuser"] = "1"
 		}
 	}
+
+	o.rewriteForPreview(ctx, in)
 
 	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
 	if err != nil {
@@ -86,4 +87,19 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		return nil, kerr.InternalServer(err.Error(), "parse content failed")
 	}
 	return ret, nil
+}
+
+func (o *OperationalPos) rewriteForPreview(ctx khttp.Context, in *opapi.PlacingRequest) {
+	header := ctx.Request().Header
+	if v := header.Get("Pg-Mock-Grayratio"); v != "" {
+		if d, err := strconv.Atoi(v); err == nil && d > 0 {
+			in.UserData.ForceGrayGroup = uint32(d)
+		}
+	}
+
+	if v := header.Get("Pg-Mock-Vipstatus"); v != "" {
+		in.UserData.Properties["vipstatus"] = v
+	}
+
+	// TODO Pg-Mock-Usergroupid 精准用户群组
 }
