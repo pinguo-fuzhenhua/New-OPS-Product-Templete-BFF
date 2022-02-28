@@ -28,7 +28,13 @@ type ClientSet struct {
 
 // NewClientSet new gRPC Client Set
 func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.TracerProvider) (*ClientSet, func(), error) {
-	conns, err := newConnection(logger, traceProvider, c.FieldDef, c.OperationalPos, c.Material)
+	conns, err := newConnection(
+		logger,
+		traceProvider,
+		connInfo{addr: c.FieldDef},
+		connInfo{addr: c.OperationalPos, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
+		connInfo{addr: c.Material},
+	)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -49,8 +55,14 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 	return h, cancelFn, nil
 }
 
-func newConnection(logger log.Logger, traceProvider trace.TracerProvider, addr ...string) ([]*grpc.ClientConn, error) {
-	r := make([]*grpc.ClientConn, len(addr))
+type connInfo struct {
+	addr       string
+	clientOpts []kgrpc.ClientOption
+	dialOpts   []grpc.DialOption
+}
+
+func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]*grpc.ClientConn, error) {
+	r := make([]*grpc.ClientConn, len(connData))
 	retryPolicy := `{
 	"LB":"` + wrr.Name + `",
 	"MethodConfig": [{
@@ -66,27 +78,30 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, addr .
 	"HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
 }`
 
-	for i := range addr {
-		conn, err := kgrpc.DialInsecure(
-			context.TODO(),
-			kgrpc.WithEndpoint(addr[i]),
+	for i := range connData {
+		dialOpts := []grpc.DialOption{
+			grpc.WithDefaultServiceConfig(retryPolicy),
+			grpc.WithBackoffMaxDelay(time.Second),
+		}
+		dialOpts = append(dialOpts, connData[i].dialOpts...)
+
+		clientOpts := []kgrpc.ClientOption{
+			kgrpc.WithEndpoint(connData[i].addr),
+			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
-				recovery.Recovery(
-					recovery.WithLogger(logger),
-				),
+				recovery.Recovery(recovery.WithLogger(logger)),
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
 				logging.Client(logger),
 			),
-			kgrpc.WithTimeout(3*time.Second),
-			kgrpc.WithOptions(
-				grpc.WithDefaultServiceConfig(retryPolicy),
-				grpc.WithBackoffMaxDelay(time.Second),
-			),
-		)
+		}
+		clientOpts = append(clientOpts, connData[i].clientOpts...)
+
+		conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
 		if err != nil {
 			return nil, err
 		}
 		r[i] = conn
 	}
+
 	return r, nil
 }
