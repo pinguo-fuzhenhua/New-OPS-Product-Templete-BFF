@@ -130,6 +130,7 @@ func (m *DNSWatcher) watch1() {
 		list = append(list, ins)
 	}
 	m.latest = list
+	m.log.Debug(list)
 	if hasChange {
 		m.changed <- list
 	}
