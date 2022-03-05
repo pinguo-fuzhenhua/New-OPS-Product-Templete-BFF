@@ -2,6 +2,7 @@ package clientset
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/discovery"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
@@ -86,13 +88,14 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithEndpoint(connData[i].addr),
+			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discover:", 1)),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
 				recovery.Recovery(recovery.WithLogger(logger)),
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
 				logging.Client(logger),
 			),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
