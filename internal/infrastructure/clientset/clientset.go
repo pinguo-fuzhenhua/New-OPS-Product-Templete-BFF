@@ -88,14 +88,14 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discover:", 1)),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
+			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
 				recovery.Recovery(recovery.WithLogger(logger)),
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
 				logging.Client(logger),
 			),
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
