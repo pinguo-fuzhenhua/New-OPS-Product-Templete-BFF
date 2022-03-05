@@ -95,7 +95,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
 				logging.Client(logger),
 			),
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(log.DefaultLogger))),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
