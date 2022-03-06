@@ -11,8 +11,8 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 )
 
-type SetCallback func(serviceName string) func()
-type Callback func()
+type SetCallback func(serviceName string) Callback
+type Callback func(instances []*registry.ServiceInstance)
 
 func NewDNSDiscovery(log *log.Helper, fn SetCallback) registry.Discovery {
 	return &DNSDiscovery{
@@ -73,7 +73,7 @@ type DNSWatcher struct {
 func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
 	r := <-m.changed
 	if m.fn != nil {
-		go m.fn()
+		go m.fn(r)
 	}
 	return r, nil
 }

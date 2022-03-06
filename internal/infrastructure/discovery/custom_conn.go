@@ -6,6 +6,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/go-kratos/kratos/v2/registry"
+	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"google.golang.org/grpc"
 )
 
@@ -18,7 +20,7 @@ type CustomConn struct {
 	conn        CustomGRPCConn
 	conns       []CustomGRPCConn
 	serviceName string
-	factory     func() (*grpc.ClientConn, error)
+	factory     func(opts ...kgrpc.ClientOption) (*grpc.ClientConn, error)
 }
 
 func NewCustomConn() *CustomConn {
@@ -27,7 +29,7 @@ func NewCustomConn() *CustomConn {
 	}
 }
 
-func (s *CustomConn) SetFactory(fn func() (*grpc.ClientConn, error)) {
+func (s *CustomConn) SetFactory(fn func(opts ...kgrpc.ClientOption) (*grpc.ClientConn, error)) {
 	s.factory = fn
 }
 func (s *CustomConn) SetServiceName(n string) {
@@ -40,20 +42,21 @@ func (s *CustomConn) close() error {
 	return nil
 }
 
-func (s *CustomConn) Notify() {
+func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 	go func() {
 		time.Sleep(time.Second * 5)
-		s.Connect(false)
+		for _, instance := range instances {
+			for _, endpoint := range instance.Endpoints {
+				s.Connect(kgrpc.WithEndpoint(endpoint))
+			}
+		}
 	}()
 }
 
 // Connect
 // @TODO 初次启动的时候会连两次
-func (s *CustomConn) Connect(isInit bool) error {
-	if !isInit && s.conn == nil {
-		return nil
-	}
-	conn, err := s.factory()
+func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
+	conn, err := s.factory(opts...)
 	if err != nil {
 		return err
 	}
