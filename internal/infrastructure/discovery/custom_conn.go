@@ -74,6 +74,7 @@ func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
 }
 
 func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	fmt.Println(s.conns[len(s.conns)-1].(*grpc.ClientConn).GetState())
 	return s.conns[len(s.conns)-1].Invoke(ctx, method, args, reply, opts...)
 }
 
