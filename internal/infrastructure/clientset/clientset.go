@@ -89,12 +89,6 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
-				customConn.SetServiceName(serviceName)
-				return func(instances []*registry.ServiceInstance) {
-					customConn.Notify(instances)
-				}
-			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
@@ -113,7 +107,14 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			}
 			return conn, err
 		})
-		err := customConn.Connect()
+		err := customConn.Connect(
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
+				customConn.SetServiceName(serviceName)
+				return func(instances []*registry.ServiceInstance) {
+					customConn.Notify(instances)
+				}
+			})),
+		)
 		if err != nil {
 			return nil, err
 		}
