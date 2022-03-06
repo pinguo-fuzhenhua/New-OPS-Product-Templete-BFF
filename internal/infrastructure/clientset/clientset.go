@@ -63,8 +63,8 @@ type connInfo struct {
 	dialOpts   []grpc.DialOption
 }
 
-func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]*grpc.ClientConn, error) {
-	r := make([]*grpc.ClientConn, len(connData))
+func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
+	r := make([]discovery.CustomGRPCConn, len(connData))
 	retryPolicy := `{
 	"LB":"` + wrr.Name + `",
 	"MethodConfig": [{
@@ -86,9 +86,14 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			grpc.WithBackoffMaxDelay(time.Second),
 		}
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
-
+		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) func() {
+				customConn.SetServiceName(serviceName)
+				return func() {
+					customConn.Connect(false)
+				}
+			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
@@ -99,11 +104,18 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
-		conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+		customConn.SetFactory(func() (discovery.CustomGRPCConn, error) {
+			conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+			if err != nil {
+				return nil, err
+			}
+			return conn, err
+		})
+		err := customConn.Connect(true)
 		if err != nil {
 			return nil, err
 		}
-		r[i] = conn
+		r[i] = customConn
 	}
 
 	return r, nil
