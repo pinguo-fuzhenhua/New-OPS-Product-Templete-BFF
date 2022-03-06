@@ -48,6 +48,7 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 		for _, ins := range instances {
 			for _, endpoint := range ins.Endpoints {
 				fmt.Println(endpoint)
+				s.Connect(kgrpc.WithEndpoint(endpoint))
 			}
 		}
 	}()
