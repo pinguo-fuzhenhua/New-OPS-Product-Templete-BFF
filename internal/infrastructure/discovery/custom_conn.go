@@ -45,7 +45,11 @@ func (s *CustomConn) close() error {
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 	go func() {
 		time.Sleep(time.Second * 5)
-		s.Connect()
+		for _, ins := range instances {
+			for _, endpoint := range ins.Endpoints {
+				fmt.Println(endpoint)
+			}
+		}
 	}()
 }
 
