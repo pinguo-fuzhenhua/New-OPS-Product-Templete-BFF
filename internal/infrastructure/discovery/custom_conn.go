@@ -41,7 +41,10 @@ func (s *CustomConn) close() error {
 }
 
 func (s *CustomConn) Notify() {
-	s.Connect(false)
+	go func() {
+		time.Sleep(time.Second * 5)
+		s.Connect(false)
+	}()
 }
 
 // Connect
