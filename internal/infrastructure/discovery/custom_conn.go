@@ -22,7 +22,9 @@ type CustomConn struct {
 }
 
 func NewCustomConn() *CustomConn {
-	return &CustomConn{}
+	return &CustomConn{
+		conns: make([]CustomGRPCConn, 0),
+	}
 }
 
 func (s *CustomConn) SetFactory(fn func() (CustomGRPCConn, error)) {
@@ -36,6 +38,10 @@ func (s *CustomConn) close() error {
 		c.Close()
 	}
 	return nil
+}
+
+func (s *CustomConn) Notify() {
+	s.Connect(false)
 }
 
 // Connect

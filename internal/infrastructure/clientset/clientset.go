@@ -91,7 +91,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) func() {
 				customConn.SetServiceName(serviceName)
 				return func() {
-					// customConn.Connect(false)
+					customConn.Notify()
 				}
 			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
