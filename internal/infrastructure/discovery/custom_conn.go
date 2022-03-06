@@ -18,7 +18,7 @@ type CustomConn struct {
 	conn        CustomGRPCConn
 	conns       []CustomGRPCConn
 	serviceName string
-	factory     func() (CustomGRPCConn, error)
+	factory     func() (*grpc.ClientConn, error)
 }
 
 func NewCustomConn() *CustomConn {
@@ -27,7 +27,7 @@ func NewCustomConn() *CustomConn {
 	}
 }
 
-func (s *CustomConn) SetFactory(fn func() (CustomGRPCConn, error)) {
+func (s *CustomConn) SetFactory(fn func() (*grpc.ClientConn, error)) {
 	s.factory = fn
 }
 func (s *CustomConn) SetServiceName(n string) {
@@ -43,7 +43,7 @@ func (s *CustomConn) close() error {
 func (s *CustomConn) Notify() {
 	go func() {
 		time.Sleep(time.Second * 5)
-		// s.Connect(false)
+		s.Connect(false)
 	}()
 }
 
@@ -57,9 +57,10 @@ func (s *CustomConn) Connect(isInit bool) error {
 	if err != nil {
 		return err
 	}
-	s.conn = conn
+	fmt.Println(conn.GetState().String())
+	// s.conn = conn
 	s.conns = append(s.conns, conn)
-	if len(s.conns) > 1 {
+	if len(s.conns) > 1 && false {
 		max := len(s.conns) - 1
 		for i := 0; i < max; i++ {
 			fmt.Println("close old connection")
@@ -74,7 +75,7 @@ func (s *CustomConn) Connect(isInit bool) error {
 }
 
 func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	return s.conn.Invoke(ctx, method, args, reply, opts...)
+	return s.conns[len(s.conns)-1].Invoke(ctx, method, args, reply, opts...)
 }
 
 func (s CustomConn) Close() error {

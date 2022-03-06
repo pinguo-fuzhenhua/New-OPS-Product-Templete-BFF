@@ -104,7 +104,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
-		customConn.SetFactory(func() (discovery.CustomGRPCConn, error) {
+		customConn.SetFactory(func() (*grpc.ClientConn, error) {
 			conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
 			if err != nil {
 				return nil, err
