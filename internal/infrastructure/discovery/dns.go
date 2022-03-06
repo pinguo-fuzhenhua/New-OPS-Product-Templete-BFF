@@ -73,7 +73,7 @@ type DNSWatcher struct {
 func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
 	r := <-m.changed
 	if m.fn != nil {
-		go m.fn(m.name)
+		go m.fn()
 	}
 	return r, nil
 }
@@ -90,12 +90,15 @@ func (m *DNSWatcher) watch1() {
 	}
 	_, srvs, err := net.LookupSRV("grpclb", "tcp", m.name)
 	if err != nil {
-		m.log.Warnf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
+		// m.log.Warnf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
 		srvs = make([]*net.SRV, 0)
 	}
 
 	if len(srvs) == 0 {
 		for _, v := range a {
+			if v == "::1" {
+				continue
+			}
 			srvs = append(srvs, &net.SRV{
 				Target: v,
 				Port:   0,
@@ -109,7 +112,7 @@ func (m *DNSWatcher) watch1() {
 	for _, v := range srvs {
 		a, err := net.LookupHost(v.Target)
 		if err != nil {
-			m.log.Warnf("resolve host failed, hostname=%s,message=%s", v.Target, err.Error())
+			// m.log.Warnf("resolve host failed, hostname=%s,message=%s", v.Target, err.Error())
 			continue
 		}
 		for _, addr := range a {
@@ -141,7 +144,6 @@ func (m *DNSWatcher) watch1() {
 		list = append(list, ins)
 	}
 	m.latest = list
-	m.log.Debug(list)
 	if hasChange {
 		m.changed <- list
 	}

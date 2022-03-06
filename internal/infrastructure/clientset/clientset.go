@@ -63,27 +63,8 @@ type connInfo struct {
 	dialOpts   []grpc.DialOption
 }
 
-type CustomConn struct {
-	conn        grpc.ClientConnInterface
-	serviceName string
-}
-
-func (s *CustomConn) SetConn(c grpc.ClientConnInterface) {
-	s.conn = c
-}
-
-func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	return s.conn.Invoke(ctx, method, args, reply, opts...)
-}
-
-// NewStream begins a streaming RPC.
-func (s *CustomConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	return s.conn.NewStream(ctx, desc, method, opts...)
-}
-
-func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]grpc.ClientConnInterface, error) {
-	r := make([]grpc.ClientConnInterface, len(connData))
-	customConns := make(map[string]*CustomConn)
+func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
+	r := make([]discovery.CustomGRPCConn, len(connData))
 	retryPolicy := `{
 	"LB":"` + wrr.Name + `",
 	"MethodConfig": [{
@@ -105,12 +86,12 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			grpc.WithBackoffMaxDelay(time.Second),
 		}
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
-		customConn := &CustomConn{}
+		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
 			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) func() {
-				customConn.serviceName = serviceName
+				customConn.SetServiceName(serviceName)
 				return func() {
-					
+					customConn.Connect(false)
 				}
 			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
@@ -123,11 +104,17 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
-		conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+		customConn.SetFactory(func() (discovery.CustomGRPCConn, error) {
+			conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+			if err != nil {
+				return nil, err
+			}
+			return conn, err
+		})
+		err := customConn.Connect(true)
 		if err != nil {
 			return nil, err
 		}
-		customConn.SetConn(conn)
 		r[i] = customConn
 	}
 
