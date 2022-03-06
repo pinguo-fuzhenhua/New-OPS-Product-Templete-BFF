@@ -43,7 +43,7 @@ func (s *CustomConn) close() error {
 func (s *CustomConn) Notify() {
 	go func() {
 		time.Sleep(time.Second * 5)
-		s.Connect(false)
+		// s.Connect(false)
 	}()
 }
 
