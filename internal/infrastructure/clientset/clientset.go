@@ -63,8 +63,27 @@ type connInfo struct {
 	dialOpts   []grpc.DialOption
 }
 
-func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]*grpc.ClientConn, error) {
-	r := make([]*grpc.ClientConn, len(connData))
+type CustomConn struct {
+	conn        grpc.ClientConnInterface
+	serviceName string
+}
+
+func (s *CustomConn) SetConn(c grpc.ClientConnInterface) {
+	s.conn = c
+}
+
+func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	return s.conn.Invoke(ctx, method, args, reply, opts...)
+}
+
+// NewStream begins a streaming RPC.
+func (s *CustomConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	return s.conn.NewStream(ctx, desc, method, opts...)
+}
+
+func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]grpc.ClientConnInterface, error) {
+	r := make([]grpc.ClientConnInterface, len(connData))
+	customConns := make(map[string]*CustomConn)
 	retryPolicy := `{
 	"LB":"` + wrr.Name + `",
 	"MethodConfig": [{
@@ -86,9 +105,14 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			grpc.WithBackoffMaxDelay(time.Second),
 		}
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
-
+		customConn := &CustomConn{}
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger))),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) func() {
+				customConn.serviceName = serviceName
+				return func() {
+					
+				}
+			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
@@ -103,7 +127,8 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		if err != nil {
 			return nil, err
 		}
-		r[i] = conn
+		customConn.SetConn(conn)
+		r[i] = customConn
 	}
 
 	return r, nil
