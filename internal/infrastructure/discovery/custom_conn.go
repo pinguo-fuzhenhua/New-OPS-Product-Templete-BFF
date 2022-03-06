@@ -50,9 +50,8 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 			for _, endpoint := range ins.Endpoints {
 				fmt.Println(endpoint)
 				tmp, _ := url.Parse(endpoint)
-				host := fmt.Sprintf("%s:%s", tmp.Host, tmp.Port())
-				fmt.Println(host)
-				s.Connect(kgrpc.WithEndpoint(host))
+				fmt.Println(tmp.Host)
+				s.Connect(kgrpc.WithEndpoint(tmp.Host))
 			}
 		}
 	}()
@@ -66,7 +65,6 @@ func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
 		return err
 	}
 	fmt.Println(conn.GetState().String())
-	// s.conn = conn
 	s.conns = append(s.conns, conn)
 	if len(s.conns) > 1 && false {
 		max := len(s.conns) - 1
