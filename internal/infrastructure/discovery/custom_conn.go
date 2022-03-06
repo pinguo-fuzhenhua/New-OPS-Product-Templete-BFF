@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/url"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/registry"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
+	"go.uber.org/atomic"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 )
@@ -24,6 +24,7 @@ type CustomConn struct {
 	serviceName string
 	factory     func(opts ...kgrpc.ClientOption) (*grpc.ClientConn, error)
 	endpoints   []string
+	count       atomic.Int64
 }
 
 func NewCustomConn() *CustomConn {
@@ -89,11 +90,12 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 	fmt.Println(s.conns[maxIdx].(*grpc.ClientConn).GetState())
 	conn := s.conns[maxIdx]
 	if ac := len(s.endpoints); ac > 1 {
-		i := int(rand.Float64()*100) % ac
-		idx := maxIdx - ac + 1 + i
+		i := s.count.Inc() % int64(ac)
+		idx := maxIdx - ac + 1 + int(i)
 		if idx > maxIdx {
 			idx = maxIdx
 		}
+
 		conn = s.conns[idx]
 	}
 	return conn.Invoke(ctx, method, args, reply, opts...)
