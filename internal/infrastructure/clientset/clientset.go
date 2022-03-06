@@ -9,6 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
+	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
@@ -88,10 +89,10 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) func() {
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
 				customConn.SetServiceName(serviceName)
-				return func() {
-					customConn.Notify()
+				return func(instances []*registry.ServiceInstance) {
+					customConn.Notify(instances)
 				}
 			})),
 			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
@@ -104,14 +105,15 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
 
-		customConn.SetFactory(func() (*grpc.ClientConn, error) {
-			conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+		customConn.SetFactory(func(customOpts ...kgrpc.ClientOption) (*grpc.ClientConn, error) {
+			newOpts := append(clientOpts, customOpts...)
+			conn, err := kgrpc.DialInsecure(context.TODO(), newOpts...)
 			if err != nil {
 				return nil, err
 			}
 			return conn, err
 		})
-		err := customConn.Connect(true)
+		err := customConn.Connect()
 		if err != nil {
 			return nil, err
 		}
