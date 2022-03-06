@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net/url"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/registry"
@@ -48,7 +49,10 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 		for _, ins := range instances {
 			for _, endpoint := range ins.Endpoints {
 				fmt.Println(endpoint)
-				s.Connect(kgrpc.WithEndpoint(endpoint))
+				tmp, _ := url.Parse(endpoint)
+				host := fmt.Sprintf("%s:%s", tmp.Host, tmp.Port())
+				fmt.Println(host)
+				s.Connect(kgrpc.WithEndpoint(host))
 			}
 		}
 	}()
