@@ -45,11 +45,7 @@ func (s *CustomConn) close() error {
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 	go func() {
 		time.Sleep(time.Second * 5)
-		for _, instance := range instances {
-			for _, endpoint := range instance.Endpoints {
-				s.Connect(kgrpc.WithEndpoint(endpoint))
-			}
-		}
+		s.Connect()
 	}()
 }
 
