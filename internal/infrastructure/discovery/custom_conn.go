@@ -64,7 +64,10 @@ func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(conn.GetState().String())
+	for i := 0; i < 5; i++ {
+		time.Sleep(time.Second)
+		fmt.Println(conn.GetState().String())
+	}
 	s.conns = append(s.conns, conn)
 	if len(s.conns) > 1 && false {
 		max := len(s.conns) - 1
