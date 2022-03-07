@@ -66,6 +66,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 	r := make([]discovery.CustomGRPCConn, len(connData))
 	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
 	// "LoadBalancingPolicy":"` + wrr.Name + `",
+	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
 	retryPolicy := `{
 	"LoadBalancingPolicy":"round_robin",
 	"MethodConfig": [{
@@ -77,8 +78,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			"BackoffMultiplier": 1.0,
 			"RetryableStatusCodes": [ "UNAVAILABLE" ]
 		}
-	}],
-	"HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
+	}]
 }`
 
 	for i := range connData {
