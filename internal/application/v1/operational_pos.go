@@ -80,7 +80,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 			}
 		}
 		o.rewriteForPreview(ctx, in)
-		return nil, err
+		return in, nil
 	}()
 	if err2 != nil {
 		return nil, kerr.BadRequest(err2.Error(), err2.Error())
