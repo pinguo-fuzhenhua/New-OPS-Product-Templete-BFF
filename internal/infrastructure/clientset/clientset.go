@@ -2,7 +2,6 @@ package clientset
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -66,8 +65,9 @@ type connInfo struct {
 
 func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
 	r := make([]discovery.CustomGRPCConn, len(connData))
+	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
 	retryPolicy := `{
-	"LB":"` + wrr.Name + `",
+	"LoadBalancingPolicy":"` + wrr.Name + `",
 	"MethodConfig": [{
 		"Name":[{"Service":""}],
 		"RetryPolicy": {
@@ -89,16 +89,24 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
-			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
+			// kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
+			kgrpc.WithEndpoint(connData[i].addr),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
 				recovery.Recovery(recovery.WithLogger(logger)),
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
 				logging.Client(logger),
 			),
+			kgrpc.WithLogger(logger),
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)
-
+		conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+		if err != nil {
+			return nil, err
+		}
+		r[i] = conn
+		continue
+		// 测试逻辑,暂时放这
 		customConn.SetFactory(func(customOpts ...kgrpc.ClientOption) (*grpc.ClientConn, error) {
 			newOpts := append(clientOpts, customOpts...)
 			conn, err := kgrpc.DialInsecure(context.TODO(), newOpts...)
@@ -107,7 +115,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			}
 			return conn, err
 		})
-		err := customConn.Connect(
+		err = customConn.Connect(
 			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
 				customConn.SetServiceName(serviceName)
 				return func(instances []*registry.ServiceInstance) {
