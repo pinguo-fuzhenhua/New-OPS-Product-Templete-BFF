@@ -136,7 +136,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 	defer span.End()
 	var fps map[string]*fdpkg.Parser
 	var err error
-	go func() {
+	func() {
 		ctx, span := tracer.Start(ctx, "ActivitiesParser.Parse.getFieldParser")
 		defer span.End()
 		fps, err = ap.getFieldParser(ctx, data)
