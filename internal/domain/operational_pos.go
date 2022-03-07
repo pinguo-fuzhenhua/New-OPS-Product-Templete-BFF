@@ -12,6 +12,7 @@ import (
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
+	"go.opentelemetry.io/otel"
 	"golang.org/x/text/language"
 )
 
@@ -129,6 +130,10 @@ func NewActivitiesParser(p *fdpkg.ParserFactory) *ActivitiesParser {
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
+	tracer := otel.Tracer("ActivitiesParser.Parse")
+	ctx, span := tracer.Start(ctx, "ActivitiesParser.Parse.*")
+	defer span.End()
+
 	fps, err := ap.getFieldParser(ctx, data)
 	if err != nil {
 		return nil, err
