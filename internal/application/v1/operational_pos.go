@@ -83,7 +83,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		o.rewriteForPreview(ctx, in)
 		var langMatcher language.Matcher
 		func() {
-			_, span := tracer.Start(ctx3, "PullByCodes.Build.PlacingRequest")
+			_, span := tracer.Start(ctx3, "PullByCodes.Build.PlacingRequest.NewLanguageMatcher")
 			defer span.End()
 			langMatcher, err = fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
 		}()
