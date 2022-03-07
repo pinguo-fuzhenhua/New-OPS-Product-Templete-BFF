@@ -91,12 +91,12 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
 	}
 
-	res, err := o.OperationalPositionsClient.Placing(ctx, in)
+	res, err := o.OperationalPositionsClient.Placing(ctx2, in)
 	if err != nil {
 		return nil, kerr.InternalServer(err.Error(), "call service failed")
 	}
 
-	ret, err := o.Parser.Parse(ctx, langMatcher, res.Payload)
+	ret, err := o.Parser.Parse(ctx2, langMatcher, res.Payload)
 	if err != nil {
 		return nil, kerr.InternalServer(err.Error(), "parse content failed")
 	}
