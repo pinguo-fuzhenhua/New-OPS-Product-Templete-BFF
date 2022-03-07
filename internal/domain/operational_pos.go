@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"sync"
 
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
@@ -139,7 +140,37 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 		return nil, err
 	}
 
+	formatActivity := func(ac *oppapi.PlacingResponse_Activity) (*Activity, error) {
+		if fps[ac.FieldDefCode] == nil {
+			return nil, fmt.Errorf("domain: ActivitiesParser#Parse field parse not found, fieldDefCode=%s", ac.FieldDefCode)
+		}
+
+		contents := new(fdpkg.FieldsCollection)
+		if err := contents.Unmarshal(ac.Contents); err != nil {
+			return nil, err
+		}
+
+		tmp := &Activity{
+			ID:        ac.Id,
+			PID:       ac.Pid,
+			RootID:    ac.RootId,
+			FieldCode: ac.FieldDefCode,
+			Name:      ac.Name,
+			Period: period{
+				Begin: ac.Period.GetBegin(),
+				End:   ac.Period.GetEnd(),
+			},
+		}
+
+		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
+			return nil, err
+		}
+		return tmp, nil
+	}
 	res := make(map[string][]*ActivityPlan, len(data))
+	var wg sync.WaitGroup
+	var wgError error
+
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
 		for i, plan := range pPlan.Plans {
@@ -153,35 +184,24 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				Activities: make([]*Activity, len(plan.Activities)),
 			}
 			for j, ac := range plan.Activities {
-				if fps[ac.FieldDefCode] == nil {
-					return nil, fmt.Errorf("domain: ActivitiesParser#Parse field parse not found, fieldDefCode=%s", ac.FieldDefCode)
-				}
-
-				contents := new(fdpkg.FieldsCollection)
-				if err := contents.Unmarshal(ac.Contents); err != nil {
-					return nil, err
-				}
-
-				tmp := &Activity{
-					ID:        ac.Id,
-					PID:       ac.Pid,
-					RootID:    ac.RootId,
-					FieldCode: ac.FieldDefCode,
-					Name:      ac.Name,
-					Period: period{
-						Begin: ac.Period.GetBegin(),
-						End:   ac.Period.GetEnd(),
-					},
-				}
-
-				if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-					return nil, err
-				}
-				outPlans[i].Activities[j] = tmp
+				wg.Add(1)
+				go func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
+					defer wg.Done()
+					tmp, err := formatActivity(formatAc)
+					if err != nil {
+						wgError = err
+					} else {
+						outPlans[planId].Activities[acId] = tmp
+					}
+				}(i, j, ac)
 			}
 		}
 
 		res[posCode] = outPlans
+	}
+	wg.Wait()
+	if wgError != nil {
+		return nil, wgError
 	}
 
 	return res, nil
