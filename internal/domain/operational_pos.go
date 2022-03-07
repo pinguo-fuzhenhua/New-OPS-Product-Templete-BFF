@@ -8,12 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"sync"
 
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/tracer"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
-	"go.opentelemetry.io/otel"
 	"golang.org/x/text/language"
 )
 
@@ -123,23 +122,24 @@ func (a *Activity) writeEles(buf *bytes.Buffer, data []fdpkg.E) error {
 }
 
 type ActivitiesParser struct {
-	pFac *fdpkg.ParserFactory
+	pFac      *fdpkg.ParserFactory
+	trFactory *tracer.Factory
 }
 
-func NewActivitiesParser(p *fdpkg.ParserFactory) *ActivitiesParser {
-	return &ActivitiesParser{pFac: p}
+func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *tracer.Factory) *ActivitiesParser {
+	return &ActivitiesParser{pFac: p, trFactory: trFactory}
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
-	tracer := otel.Tracer("ActivitiesParser.Parse")
-	ctx, span := tracer.Start(ctx, "ActivitiesParser.Parse.*")
+	ctx, tracer, span := ap.trFactory.StartNewTracer(ctx, "ActivitiesParser.Parse")
 	defer span.End()
+
 	var fps map[string]*fdpkg.Parser
 	var err error
 	func() {
-		ctx, span := tracer.Start(ctx, "ActivitiesParser.Parse.getFieldParser")
+		ctx2, span := tracer.Start(ctx, "ActivitiesParser.Parse.getFieldParser")
 		defer span.End()
-		fps, err = ap.getFieldParser(ctx, data)
+		fps, err = ap.getFieldParser(ctx2, data)
 	}()
 
 	if err != nil {
@@ -167,14 +167,13 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				End:   ac.Period.GetEnd(),
 			},
 		}
-
-		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-			return nil, err
-		}
+		/*
+			if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
+				return nil, err
+			}*/
 		return tmp, nil
 	}
 	res := make(map[string][]*ActivityPlan, len(data))
-	var wg sync.WaitGroup
 	var wgError error
 
 	for posCode, pPlan := range data {
@@ -190,9 +189,10 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				Activities: make([]*Activity, len(plan.Activities)),
 			}
 			for j, ac := range plan.Activities {
-				wg.Add(1)
-				go func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
-					defer wg.Done()
+				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
+					_, span := tracer.Start(ctx, "ActivitiesParser.Parse.formatActivity")
+					defer span.End()
+
 					tmp, err := formatActivity(formatAc)
 					if err != nil {
 						wgError = err
@@ -205,7 +205,6 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 
 		res[posCode] = outPlans
 	}
-	wg.Wait()
 	if wgError != nil {
 		return nil, wgError
 	}
