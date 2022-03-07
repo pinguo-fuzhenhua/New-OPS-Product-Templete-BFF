@@ -67,7 +67,6 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
 	// "LoadBalancingPolicy":"` + wrr.Name + `",
 	retryPolicy := `{
-	"LoadBalancingPolicy":"round_robin",
 	"MethodConfig": [{
 		"Name":[{"Service":""}],
 		"RetryPolicy": {
