@@ -13,8 +13,8 @@ type Config struct {
 
 // NewFactory
 // @TODO move thee config to yaml
-func NewFactory(cfg *Config) *Factory {
-	cfg = &Config{
+func NewFactory() *Factory {
+	cfg := &Config{
 		Level: "debug",
 	}
 	return &Factory{
