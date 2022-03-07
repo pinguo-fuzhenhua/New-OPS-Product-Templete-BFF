@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/tracer"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
@@ -20,10 +22,14 @@ import (
 type OperationalPos struct {
 	*clientset.ClientSet
 
-	Parser *domain.ActivitiesParser
+	Parser        *domain.ActivitiesParser
+	TracerFactory *tracer.Factory
 }
 
 func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
+	ctx2, tracer, span := o.TracerFactory.StartNewTracer(context.Context(ctx), "PullByCodes")
+	defer span.End()
+
 	posCodes := strings.TrimSpace(ctx.Form().Get("codes"))
 	if posCodes == "" {
 		return nil, kerr.BadRequest("invalid param", "invalid param")
@@ -31,46 +37,51 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 
 	cp := cparam.FromContext(ctx)
 
-	cVer, err := pver.Parse(cp.AppVersion)
-	if err != nil {
-		return nil, kerr.BadRequest("invalid AppVersion", "invalid param")
-	}
+	in, err := func() (*opapi.PlacingRequest, error) {
+		_, span := tracer.Start(ctx2, "PullByCodes.Build.PlacingRequest")
+		defer span.End()
 
-	in := &opapi.PlacingRequest{
-		Prefetch:      72,
-		Scope:         cp.AppID,
-		PosCodes:      strings.Split(posCodes, ","),
-		Platform:      cp.Platform,
-		ClientVersion: int64(cVer),
-		UserData: &opapi.UserData{
-			UserId:    cp.UserID,
-			DeviceId:  cp.EID,
-			UtcOffset: int32(cp.UtcOffset),
-			Properties: map[string]string{
-				"language":  cp.Language,
-				"locale":    cp.Locale,
-				"vipstatus": ctx.Form().Get("vipStatus"),
+		cVer, err := pver.Parse(cp.AppVersion)
+		if err != nil {
+			return nil, kerr.BadRequest("invalid AppVersion", "invalid param")
+		}
+
+		in := &opapi.PlacingRequest{
+			Prefetch:      72,
+			Scope:         cp.AppID,
+			PosCodes:      strings.Split(posCodes, ","),
+			Platform:      cp.Platform,
+			ClientVersion: int64(cVer),
+			UserData: &opapi.UserData{
+				UserId:    cp.UserID,
+				DeviceId:  cp.EID,
+				UtcOffset: int32(cp.UtcOffset),
+				Properties: map[string]string{
+					"language":  cp.Language,
+					"locale":    cp.Locale,
+					"vipstatus": ctx.Form().Get("vipStatus"),
+				},
 			},
-		},
-	}
-
-	if isNewUser := ctx.Form().Get("isNewUser"); isNewUser != "" {
-		b, err := strconv.ParseBool(isNewUser)
-		if err == nil {
-			in.UserData.IsNewUser = wrapperspb.Bool(b)
-			in.UserData.Properties["fornewuser"] = isNewUser
 		}
-	}
-	if in.UserData.IsNewUser == nil {
-		v := domain.IsNewUser(cp, ctx.Request())
-		in.UserData.IsNewUser = wrapperspb.Bool(v)
-		in.UserData.Properties["fornewuser"] = "0"
-		if v {
-			in.UserData.Properties["fornewuser"] = "1"
-		}
-	}
 
-	o.rewriteForPreview(ctx, in)
+		if isNewUser := ctx.Form().Get("isNewUser"); isNewUser != "" {
+			b, err := strconv.ParseBool(isNewUser)
+			if err == nil {
+				in.UserData.IsNewUser = wrapperspb.Bool(b)
+				in.UserData.Properties["fornewuser"] = isNewUser
+			}
+		}
+		if in.UserData.IsNewUser == nil {
+			v := domain.IsNewUser(cp, ctx.Request())
+			in.UserData.IsNewUser = wrapperspb.Bool(v)
+			in.UserData.Properties["fornewuser"] = "0"
+			if v {
+				in.UserData.Properties["fornewuser"] = "1"
+			}
+		}
+		o.rewriteForPreview(ctx, in)
+		return nil, err
+	}()
 
 	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
 	if err != nil {
