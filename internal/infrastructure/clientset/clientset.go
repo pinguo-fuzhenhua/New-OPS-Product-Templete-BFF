@@ -77,9 +77,9 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			"BackoffMultiplier": 1.0,
 			"RetryableStatusCodes": [ "UNAVAILABLE" ]
 		}
-	}],
-	"HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
+	}]
 }`
+	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
 
 	for i := range connData {
 		dialOpts := []grpc.DialOption{
