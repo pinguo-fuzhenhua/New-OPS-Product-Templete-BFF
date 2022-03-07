@@ -98,7 +98,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 					fmt.Println(instances)
 				}
 			})),
-			kgrpc.WithEndpoint(connData[i].addr),
+			// kgrpc.WithEndpoint(connData[i].addr),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
 				recovery.Recovery(recovery.WithLogger(logger)),
