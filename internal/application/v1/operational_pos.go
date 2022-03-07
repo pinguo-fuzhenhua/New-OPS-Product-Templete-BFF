@@ -14,6 +14,7 @@ import (
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
+	"golang.org/x/text/language"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -37,13 +38,13 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 
 	cp := cparam.FromContext(ctx)
 
-	in, err2 := func() (*opapi.PlacingRequest, error) {
-		_, span := tracer.Start(ctx2, "PullByCodes.Build.PlacingRequest")
+	in, langMatcher, err2 := func() (*opapi.PlacingRequest, language.Matcher, error) {
+		ctx3, span := tracer.Start(ctx2, "PullByCodes.Build.PlacingRequest")
 		defer span.End()
 
 		cVer, err := pver.Parse(cp.AppVersion)
 		if err != nil {
-			return nil, kerr.BadRequest("invalid AppVersion", "invalid param")
+			return nil, nil, kerr.BadRequest("invalid AppVersion", "invalid param")
 		}
 
 		in := &opapi.PlacingRequest{
@@ -80,15 +81,19 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 			}
 		}
 		o.rewriteForPreview(ctx, in)
-		return in, nil
+		var langMatcher language.Matcher
+		func() {
+			_, span := tracer.Start(ctx3, "PullByCodes.Build.PlacingRequest.NewLanguageMatcher")
+			defer span.End()
+			langMatcher, err = fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
+		}()
+		if err != nil {
+			return nil, nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
+		}
+		return in, langMatcher, nil
 	}()
 	if err2 != nil {
 		return nil, kerr.BadRequest(err2.Error(), err2.Error())
-	}
-
-	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
-	if err != nil {
-		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
 	}
 
 	res, err := o.OperationalPositionsClient.Placing(ctx2, in)
