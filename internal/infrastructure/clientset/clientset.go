@@ -9,7 +9,6 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/discovery"
@@ -66,8 +65,8 @@ type connInfo struct {
 func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
 	r := make([]discovery.CustomGRPCConn, len(connData))
 	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
+	// "LoadBalancingPolicy":"` + wrr.Name + `",
 	retryPolicy := `{
-	"LoadBalancingPolicy":"` + wrr.Name + `",
 	"MethodConfig": [{
 		"Name":[{"Service":""}],
 		"RetryPolicy": {
