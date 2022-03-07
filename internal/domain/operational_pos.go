@@ -167,10 +167,10 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				End:   ac.Period.GetEnd(),
 			},
 		}
-		/*
-			if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-				return nil, err
-			}*/
+
+		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
+			return nil, err
+		}
 		return tmp, nil
 	}
 	res := make(map[string][]*ActivityPlan, len(data))
