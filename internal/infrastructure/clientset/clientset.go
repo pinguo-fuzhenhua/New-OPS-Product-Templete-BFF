@@ -2,6 +2,8 @@ package clientset
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -89,7 +91,13 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 		dialOpts = append(dialOpts, connData[i].dialOpts...)
 		customConn := discovery.NewCustomConn()
 		clientOpts := []kgrpc.ClientOption{
-			// kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
+			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
+			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
+				customConn.SetServiceName(serviceName)
+				return func(instances []*registry.ServiceInstance) {
+					fmt.Println(instances)
+				}
+			})),
 			kgrpc.WithEndpoint(connData[i].addr),
 			kgrpc.WithOptions(dialOpts...),
 			kgrpc.WithMiddleware(
