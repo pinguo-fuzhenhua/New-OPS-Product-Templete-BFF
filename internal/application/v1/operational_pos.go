@@ -37,7 +37,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 
 	cp := cparam.FromContext(ctx)
 
-	in, err := func() (*opapi.PlacingRequest, error) {
+	in, err2 := func() (*opapi.PlacingRequest, error) {
 		_, span := tracer.Start(ctx2, "PullByCodes.Build.PlacingRequest")
 		defer span.End()
 
@@ -82,6 +82,9 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		o.rewriteForPreview(ctx, in)
 		return nil, err
 	}()
+	if err2 != nil {
+		return nil, kerr.BadRequest(err2.Error(), err2.Error())
+	}
 
 	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
 	if err != nil {
