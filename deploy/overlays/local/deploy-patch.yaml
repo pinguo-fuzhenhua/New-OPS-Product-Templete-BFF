@@ -1,0 +1,12 @@
+- op: replace
+  path: /spec/template/spec/containers/0/command/2
+  value: dev
+- op: replace
+  path: /spec/replicas
+  value: 1
+- op: replace
+  path: /spec/template/spec/containers/0/volumeMounts/1
+  value: { "name": "ignore-configmap", "mountPath": "/ignore-configmap" }
+- op: replace
+  path: /spec/template/spec/volumes/1
+  value: { "name": "ignore-configmap", "emptyDir": {} }
