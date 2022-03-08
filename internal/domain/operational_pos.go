@@ -176,6 +176,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 	res := make(map[string][]*ActivityPlan, len(data))
 	var wgError error
 
+	spanIndex := 0
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
 		for i, plan := range pPlan.Plans {
@@ -190,7 +191,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 			}
 			for j, ac := range plan.Activities {
 				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
-					_, span := tracer.Start(ctx, "ActivitiesParser.Parse.formatActivity")
+					_, span := tracer.Start(ctx, fmt.Sprintf("ActivitiesParser.Parse.formatActivity.%v", spanIndex))
 					defer span.End()
 
 					tmp, err := formatActivity(formatAc)
