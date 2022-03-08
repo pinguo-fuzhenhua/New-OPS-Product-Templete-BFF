@@ -192,6 +192,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 			for j, ac := range plan.Activities {
 				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
 					_, span := tracer.Start(ctx, fmt.Sprintf("ActivitiesParser.Parse.formatActivity.%v", spanIndex))
+					spanIndex++
 					defer span.End()
 
 					tmp, err := formatActivity(formatAc)
