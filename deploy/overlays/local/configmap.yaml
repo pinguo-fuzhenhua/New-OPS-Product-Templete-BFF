@@ -4,6 +4,6 @@ metadata:
   namespace: app-camera360
   name: camera360-bff-configmap
 data:
-  clientSet.fieldDef: dns:///operations-field-definitions-svc.operation-placing-system:9000
-  clientSet.operationalPos: dns:///operational-positions.operation-placing-system:9000
+  clientSet.fielddef: dns:///operations-field-definitions-svc.operation-placing-system:9000
+  clientSet.operationalpos: dns:///operational-positions.operation-placing-system:9000
   clientSet.material: dns:///operations-system-materials-svc.operation-placing-system:9000
