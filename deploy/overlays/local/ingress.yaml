@@ -3,13 +3,7 @@ kind: Ingress
 metadata:
   namespace: app-camera360
   name: camera360-bff
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
 spec:
-  tls:
-    - hosts:
-        - camera360-bff-k8s.camera360.com
-      secretName: camera360.com
   rules:
     - host: camera360-bff-k8s.camera360.com
       http:
