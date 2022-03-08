@@ -10,9 +10,9 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/tracer"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
+	"github.com/pinguo-icc/kratos-library/v2/trace"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
 	"golang.org/x/text/language"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -24,11 +24,11 @@ type OperationalPos struct {
 	*clientset.ClientSet
 
 	Parser        *domain.ActivitiesParser
-	TracerFactory *tracer.Factory
+	TracerFactory *trace.Factory
 }
 
 func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
-	ctx2, tracer, span := o.TracerFactory.StartNewTracer(context.Context(ctx), "PullByCodes")
+	ctx2, tracer, span := o.TracerFactory.Debug(context.Context(ctx), "PullByCodes")
 	defer span.End()
 
 	posCodes := strings.TrimSpace(ctx.Form().Get("codes"))

@@ -10,7 +10,7 @@ require (
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
 	github.com/pinguo-icc/go-base/v2 v2.5.3
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
-	github.com/pinguo-icc/kratos-library/v2 v2.1.7
+	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.4.1
