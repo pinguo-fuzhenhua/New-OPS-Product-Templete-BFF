@@ -13,6 +13,5 @@ var ProviderSet = wire.NewSet(
 	ptrace.NewTracerProvider,
 	clientset.NewClientSet,
 	server.NewHttpServer,
-
 	wire.FieldsOf(new(*clientset.ClientSet), "FieldDefinitionsClient"),
 )

@@ -30,10 +30,12 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	fieldDefinitionsClient := clientSet.FieldDefinitionsClient
 	parserFactory := domain.NewParserFactory(fieldDefinitionsClient)
-	activitiesParser := domain.NewActivitiesParser(parserFactory)
+	factory := trace.NewFactory(config)
+	activitiesParser := domain.NewActivitiesParser(parserFactory, factory)
 	operationalPos := &v1.OperationalPos{
-		ClientSet: clientSet,
-		Parser:    activitiesParser,
+		ClientSet:     clientSet,
+		Parser:        activitiesParser,
+		TracerFactory: factory,
 	}
 	routerDefines := &application.RouterDefines{
 		OPos: operationalPos,

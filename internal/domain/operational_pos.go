@@ -11,6 +11,7 @@ import (
 
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
+	"github.com/pinguo-icc/kratos-library/v2/trace"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	"golang.org/x/text/language"
 )
@@ -121,20 +122,61 @@ func (a *Activity) writeEles(buf *bytes.Buffer, data []fdpkg.E) error {
 }
 
 type ActivitiesParser struct {
-	pFac *fdpkg.ParserFactory
+	pFac      *fdpkg.ParserFactory
+	trFactory *trace.Factory
 }
 
-func NewActivitiesParser(p *fdpkg.ParserFactory) *ActivitiesParser {
-	return &ActivitiesParser{pFac: p}
+func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *trace.Factory) *ActivitiesParser {
+	return &ActivitiesParser{pFac: p, trFactory: trFactory}
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
-	fps, err := ap.getFieldParser(ctx, data)
+	ctx, tracer, span := ap.trFactory.Debug(ctx, "ActivitiesParser.Parse")
+	defer span.End()
+
+	var fps map[string]*fdpkg.Parser
+	var err error
+	func() {
+		ctx2, span := tracer.Start(ctx, "ActivitiesParser.Parse.getFieldParser")
+		defer span.End()
+		fps, err = ap.getFieldParser(ctx2, data)
+	}()
+
 	if err != nil {
 		return nil, err
 	}
 
+	formatActivity := func(ac *oppapi.PlacingResponse_Activity) (*Activity, error) {
+		if fps[ac.FieldDefCode] == nil {
+			return nil, fmt.Errorf("domain: ActivitiesParser#Parse field parse not found, fieldDefCode=%s", ac.FieldDefCode)
+		}
+
+		contents := new(fdpkg.FieldsCollection)
+		if err := contents.Unmarshal(ac.Contents); err != nil {
+			return nil, err
+		}
+
+		tmp := &Activity{
+			ID:        ac.Id,
+			PID:       ac.Pid,
+			RootID:    ac.RootId,
+			FieldCode: ac.FieldDefCode,
+			Name:      ac.Name,
+			Period: period{
+				Begin: ac.Period.GetBegin(),
+				End:   ac.Period.GetEnd(),
+			},
+		}
+
+		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
+			return nil, err
+		}
+		return tmp, nil
+	}
 	res := make(map[string][]*ActivityPlan, len(data))
+	var wgError error
+
+	spanIndex := 0
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
 		for i, plan := range pPlan.Plans {
@@ -148,35 +190,25 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				Activities: make([]*Activity, len(plan.Activities)),
 			}
 			for j, ac := range plan.Activities {
-				if fps[ac.FieldDefCode] == nil {
-					return nil, fmt.Errorf("domain: ActivitiesParser#Parse field parse not found, fieldDefCode=%s", ac.FieldDefCode)
-				}
+				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
+					_, span := tracer.Start(ctx, fmt.Sprintf("ActivitiesParser.Parse.formatActivity.%v", spanIndex))
+					spanIndex++
+					defer span.End()
 
-				contents := new(fdpkg.FieldsCollection)
-				if err := contents.Unmarshal(ac.Contents); err != nil {
-					return nil, err
-				}
-
-				tmp := &Activity{
-					ID:        ac.Id,
-					PID:       ac.Pid,
-					RootID:    ac.RootId,
-					FieldCode: ac.FieldDefCode,
-					Name:      ac.Name,
-					Period: period{
-						Begin: ac.Period.GetBegin(),
-						End:   ac.Period.GetEnd(),
-					},
-				}
-
-				if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-					return nil, err
-				}
-				outPlans[i].Activities[j] = tmp
+					tmp, err := formatActivity(formatAc)
+					if err != nil {
+						wgError = err
+					} else {
+						outPlans[planId].Activities[acId] = tmp
+					}
+				}(i, j, ac)
 			}
 		}
 
 		res[posCode] = outPlans
+	}
+	if wgError != nil {
+		return nil, wgError
 	}
 
 	return res, nil

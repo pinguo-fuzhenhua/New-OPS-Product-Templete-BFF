@@ -1,6 +1,7 @@
 app:
     env: &appEnv qa
 trace:
+    level: debug
     env: *appEnv
     jaeger:
         endpoint: http://10.0.5.176:14268/api/traces

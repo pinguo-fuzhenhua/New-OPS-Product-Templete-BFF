@@ -10,11 +10,12 @@ require (
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
 	github.com/pinguo-icc/go-base/v2 v2.5.3
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
-	github.com/pinguo-icc/kratos-library/v2 v2.1.7
+	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
+	go.uber.org/atomic v1.9.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/text v0.3.7
 	google.golang.org/grpc v1.44.0
@@ -66,7 +67,6 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.4.1 // indirect
 	go.opentelemetry.io/otel/sdk v1.4.1 // indirect
 	go.opentelemetry.io/proto/otlp v0.12.0 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
