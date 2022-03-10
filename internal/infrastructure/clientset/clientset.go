@@ -2,7 +2,6 @@ package clientset
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/discovery"
@@ -31,7 +31,7 @@ type ClientSet struct {
 
 // NewClientSet new gRPC Client Set
 func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.TracerProvider) (*ClientSet, func(), error) {
-	conns, err := newConnection(
+	conns, err := newConnectionWithDNSDiscover(
 		logger,
 		traceProvider,
 		connInfo{addr: c.FieldDef},
@@ -64,11 +64,56 @@ type connInfo struct {
 	dialOpts   []grpc.DialOption
 }
 
-func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
+func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]*grpc.ClientConn, error) {
+	r := make([]*grpc.ClientConn, len(connData))
+	retryPolicy := `{
+	"LB":"` + wrr.Name + `",
+	"MethodConfig": [{
+		"Name":[{"Service":""}],
+		"RetryPolicy": {
+			"MaxAttempts": 3,
+			"InitialBackoff": ".01s",
+			"MaxBackoff": ".01s", 
+			"BackoffMultiplier": 1.0,
+			"RetryableStatusCodes": [ "UNAVAILABLE" ]
+		}
+	}],
+	"HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
+}`
+
+	for i := range connData {
+		dialOpts := []grpc.DialOption{
+			grpc.WithDefaultServiceConfig(retryPolicy),
+			grpc.WithBackoffMaxDelay(time.Second),
+		}
+		dialOpts = append(dialOpts, connData[i].dialOpts...)
+
+		clientOpts := []kgrpc.ClientOption{
+			kgrpc.WithEndpoint(connData[i].addr),
+			kgrpc.WithOptions(dialOpts...),
+			kgrpc.WithMiddleware(
+				recovery.Recovery(recovery.WithLogger(logger)),
+				tracing.Client(tracing.WithTracerProvider(traceProvider)),
+				logging.Client(logger),
+			),
+		}
+		clientOpts = append(clientOpts, connData[i].clientOpts...)
+
+		conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+		if err != nil {
+			return nil, err
+		}
+		r[i] = conn
+	}
+
+	return r, nil
+}
+
+func newConnectionWithDNSDiscover(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
 	r := make([]discovery.CustomGRPCConn, len(connData))
 	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
 	// "LoadBalancingPolicy":"` + wrr.Name + `",
-	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"}
+	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"} //健康检测不过
 	retryPolicy := `{
 	"LoadBalancingPolicy":"round_robin",
 	"MethodConfig": [{
@@ -95,7 +140,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
 				customConn.SetServiceName(serviceName)
 				return func(instances []*registry.ServiceInstance) {
-					fmt.Println(instances)
+					// nothing need to do here
 				}
 			})),
 			// kgrpc.WithEndpoint(connData[i].addr),
@@ -113,28 +158,6 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			return nil, err
 		}
 		r[i] = conn
-		continue
-		// 测试逻辑,暂时放这
-		customConn.SetFactory(func(customOpts ...kgrpc.ClientOption) (*grpc.ClientConn, error) {
-			newOpts := append(clientOpts, customOpts...)
-			conn, err := kgrpc.DialInsecure(context.TODO(), newOpts...)
-			if err != nil {
-				return nil, err
-			}
-			return conn, err
-		})
-		err = customConn.Connect(
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(serviceName string) discovery.Callback {
-				customConn.SetServiceName(serviceName)
-				return func(instances []*registry.ServiceInstance) {
-					customConn.Notify(instances)
-				}
-			})),
-		)
-		if err != nil {
-			return nil, err
-		}
-		r[i] = customConn
 	}
 
 	return r, nil

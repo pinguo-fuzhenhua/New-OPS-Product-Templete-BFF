@@ -78,7 +78,6 @@ func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
 		if conn.GetState() == connectivity.Ready {
 			break
 		}
-		fmt.Println(conn.GetState().String())
 		time.Sleep(time.Second)
 	}
 	s.conns = append(s.conns, conn)
@@ -87,7 +86,6 @@ func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
 
 func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
 	maxIdx := len(s.conns) - 1
-	fmt.Println(s.conns[maxIdx].(*grpc.ClientConn).GetState())
 	conn := s.conns[maxIdx]
 	if ac := len(s.endpoints); ac > 1 {
 		i := s.count.Inc() % int64(ac)
@@ -95,7 +93,6 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 		if idx > maxIdx {
 			idx = maxIdx
 		}
-
 		conn = s.conns[idx]
 	}
 	return conn.Invoke(ctx, method, args, reply, opts...)
