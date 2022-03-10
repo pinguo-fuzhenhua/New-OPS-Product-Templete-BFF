@@ -47,6 +47,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/olivere/elastic/v7 v7.0.26 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
+	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220310061547-ef24ed73e3f1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/qiniu/go-sdk/v7 v7.11.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
