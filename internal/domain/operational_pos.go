@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/tracer"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
+	"github.com/pinguo-icc/kratos-library/v2/trace"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	"golang.org/x/text/language"
 )
@@ -123,15 +123,15 @@ func (a *Activity) writeEles(buf *bytes.Buffer, data []fdpkg.E) error {
 
 type ActivitiesParser struct {
 	pFac      *fdpkg.ParserFactory
-	trFactory *tracer.Factory
+	trFactory *trace.Factory
 }
 
-func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *tracer.Factory) *ActivitiesParser {
+func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *trace.Factory) *ActivitiesParser {
 	return &ActivitiesParser{pFac: p, trFactory: trFactory}
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
-	ctx, tracer, span := ap.trFactory.StartNewTracer(ctx, "ActivitiesParser.Parse")
+	ctx, tracer, span := ap.trFactory.Debug(ctx, "ActivitiesParser.Parse")
 	defer span.End()
 
 	var fps map[string]*fdpkg.Parser
@@ -176,6 +176,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 	res := make(map[string][]*ActivityPlan, len(data))
 	var wgError error
 
+	spanIndex := 0
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
 		for i, plan := range pPlan.Plans {
@@ -190,7 +191,8 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 			}
 			for j, ac := range plan.Activities {
 				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
-					_, span := tracer.Start(ctx, "ActivitiesParser.Parse.formatActivity")
+					_, span := tracer.Start(ctx, fmt.Sprintf("ActivitiesParser.Parse.formatActivity.%v", spanIndex))
+					spanIndex++
 					defer span.End()
 
 					tmp, err := formatActivity(formatAc)

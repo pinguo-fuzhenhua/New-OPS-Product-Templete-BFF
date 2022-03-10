@@ -53,7 +53,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8000
-            initialDelaySeconds: 20
+            initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 3
             successThreshold: 1
@@ -61,7 +61,7 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8000
-            initialDelaySeconds: 20
+            initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 3
             successThreshold: 1

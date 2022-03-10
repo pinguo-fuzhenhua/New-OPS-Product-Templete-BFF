@@ -14,7 +14,6 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/tracer"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
@@ -31,7 +30,7 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	}
 	fieldDefinitionsClient := clientSet.FieldDefinitionsClient
 	parserFactory := domain.NewParserFactory(fieldDefinitionsClient)
-	factory := tracer.NewFactory()
+	factory := trace.NewFactory(config)
 	activitiesParser := domain.NewActivitiesParser(parserFactory, factory)
 	operationalPos := &v1.OperationalPos{
 		ClientSet:     clientSet,
