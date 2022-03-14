@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"net/url"
-	"sync"
 	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -25,15 +24,18 @@ type CustomConn struct {
 	endpointCount int
 	offset        int
 	count         int64
-	locker        sync.Locker
+	notify        chan []*registry.ServiceInstance
 }
 
 func NewCustomConn(logger *log.Helper) *CustomConn {
-	return &CustomConn{
+	x := &CustomConn{
 		conns:  make([]CustomGRPCConn, 0),
 		opts:   make([]kgrpc.ClientOption, 0),
 		logger: logger,
+		notify: make(chan []*registry.ServiceInstance, 10),
 	}
+	go x.watch()
+	return x
 }
 
 func (s *CustomConn) WithKGRPCClientOption(opts ...kgrpc.ClientOption) {
@@ -48,24 +50,27 @@ func (s *CustomConn) close() error {
 }
 
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
-	s.locker.Lock()
-	defer s.locker.Unlock()
+	s.notify <- instances
+}
 
-	conns := make([]CustomGRPCConn, 0)
-	for _, ins := range instances {
-		for _, endpoint := range ins.Endpoints {
-			tmp, _ := url.Parse(endpoint)
-			conn, err := s.connect(context.Background(), kgrpc.WithEndpoint(tmp.Host))
-			if err != nil {
-				s.logger.Errorf("connect server error,host=%s,message=%s", tmp.Host, err.Error())
-			} else {
-				conns = append(conns, conn)
+func (s *CustomConn) watch() {
+	for instances := range s.notify {
+		conns := make([]CustomGRPCConn, 0)
+		for _, ins := range instances {
+			for _, endpoint := range ins.Endpoints {
+				tmp, _ := url.Parse(endpoint)
+				conn, err := s.connect(context.Background(), kgrpc.WithEndpoint(tmp.Host))
+				if err != nil {
+					s.logger.Errorf("connect server error,host=%s,message=%s", tmp.Host, err.Error())
+				} else {
+					conns = append(conns, conn)
+				}
 			}
 		}
+		s.endpointCount = len(conns)
+		s.offset = len(s.conns)
+		s.conns = append(s.conns, conns...)
 	}
-	s.endpointCount = len(conns)
-	s.offset = len(s.conns)
-	s.conns = append(s.conns, conns...)
 }
 
 func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) error {
