@@ -69,6 +69,7 @@ func (s *CustomConn) watch() {
 		}
 		s.endpointCount = len(conns)
 		s.offset = len(s.conns)
+		s.logger.Debugf("offset=%v, endpointcount=%v", s.offset, s.endpointCount)
 		s.conns = append(s.conns, conns...)
 	}
 }
@@ -98,7 +99,6 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 
 func (s *CustomConn) pickup() grpc.ClientConnInterface {
 	conn := s.conns[s.offset]
-	s.logger.Debugf("offset=%v, endpointcount=%v", s.offset, s.endpointCount)
 	if s.endpointCount > 1 {
 		x := atomic.AddInt64(&s.count, 1)
 		idx := int(x)%s.endpointCount + s.offset
