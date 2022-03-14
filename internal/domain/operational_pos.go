@@ -169,7 +169,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 		}
 
 		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parse activity failed, id=%s %w", ac.Id, err)
 		}
 		return tmp, nil
 	}
