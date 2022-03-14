@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/url"
+	"sync"
 	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -24,6 +25,7 @@ type CustomConn struct {
 	endpointCount int
 	offset        int
 	count         int64
+	locker        sync.Locker
 }
 
 func NewCustomConn(logger *log.Helper) *CustomConn {
@@ -46,6 +48,9 @@ func (s *CustomConn) close() error {
 }
 
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
+	s.locker.Lock()
+	defer s.locker.Unlock()
+
 	conns := make([]CustomGRPCConn, 0)
 	for _, ins := range instances {
 		for _, endpoint := range ins.Endpoints {
