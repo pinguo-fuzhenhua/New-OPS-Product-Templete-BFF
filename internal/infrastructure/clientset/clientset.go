@@ -19,7 +19,6 @@ import (
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/balancer/roundrobin"
 )
 
 // ClientSet gRPC Client Set
@@ -116,7 +115,7 @@ func newConnectionWithDNSDiscover(logger log.Logger, traceProvider trace.TracerP
 	// "LoadBalancingPolicy":"` + wrr.Name + `",
 	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"} //健康检测不过
 	retryPolicy := `{
-	"LoadBalancingPolicy":"` + roundrobin.Name + `",
+	"LoadBalancingPolicy":"round_robin",
 	"MethodConfig": [{
 		"Name":[{"Service":""}],
 		"RetryPolicy": {
