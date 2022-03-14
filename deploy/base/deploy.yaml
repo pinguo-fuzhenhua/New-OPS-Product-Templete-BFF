@@ -29,6 +29,8 @@ spec:
         - env:
             - name: GOLANG_PROTOBUF_REGISTRATION_CONFLICT
               value: ignore
+            - name: GOGC
+              value: "400"
           image: mirror.camera360.com
           imagePullPolicy: IfNotPresent
           name: camera360-bff
@@ -39,7 +41,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 500m
+              cpu: 2000m
               memory: 500Mi
             requests:
               cpu: 50m
