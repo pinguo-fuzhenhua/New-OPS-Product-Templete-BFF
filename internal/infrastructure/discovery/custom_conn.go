@@ -23,6 +23,7 @@ type CustomConn struct {
 	opts   []kgrpc.ClientOption
 	logger *log.Helper
 	locker *sync.RWMutex
+	offset int
 	count  int64
 }
 
@@ -61,9 +62,8 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 			}
 		}
 	}
-	s.locker.Lock()
-	defer s.locker.Unlock()
-	s.conns = conns
+	s.offset = len(s.conns)
+	s.conns = append(conns, conns...)
 }
 
 func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) error {
@@ -100,7 +100,7 @@ func (s *CustomConn) pickup() grpc.ClientConnInterface {
 	conn := s.conns[0]
 	if length > 1 {
 		x := atomic.AddInt64(&s.count, 1)
-		idx := x % int64(length)
+		idx := int(x)%(length) + s.offset
 		conn = s.conns[idx]
 	}
 	return conn
