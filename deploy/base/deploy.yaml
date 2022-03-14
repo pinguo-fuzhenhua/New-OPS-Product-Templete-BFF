@@ -30,7 +30,7 @@ spec:
             - name: GOLANG_PROTOBUF_REGISTRATION_CONFLICT
               value: ignore
             - name: GOGC
-              value: 400
+              value: "400"
           image: mirror.camera360.com
           imagePullPolicy: IfNotPresent
           name: camera360-bff
