@@ -46,17 +46,15 @@ func (s *CustomConn) close() error {
 }
 
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
-	newEndpoints := []string{}
 	conns := make([]CustomGRPCConn, 0)
 	for _, ins := range instances {
 		for _, endpoint := range ins.Endpoints {
 			tmp, _ := url.Parse(endpoint)
 			conn, err := s.connect(context.Background(), kgrpc.WithEndpoint(tmp.Host))
-			conns = append(conns, conn)
 			if err != nil {
 				s.logger.Errorf("connect server error,host=%s,message=%s", tmp.Host, err.Error())
 			} else {
-				newEndpoints = append(newEndpoints, endpoint)
+				conns = append(conns, conn)
 			}
 		}
 	}
