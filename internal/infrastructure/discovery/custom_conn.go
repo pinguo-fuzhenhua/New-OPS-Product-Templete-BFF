@@ -92,7 +92,7 @@ func (s *CustomConn) pickup() grpc.ClientConnInterface {
 	if s.endpointCount > 1 {
 		x := atomic.AddInt64(&s.count, 1)
 		idx := int(x)%s.endpointCount + s.offset
-		s.logger.Debugf("index=%v, endpointcount=%v", idx, s.endpointCount)
+		s.logger.Debugf("index=%v, endpointcount=%v,totalLength=%v", idx, s.endpointCount, len(s.conns))
 		conn = s.conns[idx]
 	}
 	return conn
