@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"net/url"
-	"sync"
 	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -22,7 +21,6 @@ type CustomConn struct {
 	conns  []CustomGRPCConn
 	opts   []kgrpc.ClientOption
 	logger *log.Helper
-	locker *sync.RWMutex
 	offset int
 	count  int64
 }
@@ -32,7 +30,6 @@ func NewCustomConn(logger *log.Helper) *CustomConn {
 		conns:  make([]CustomGRPCConn, 0),
 		opts:   make([]kgrpc.ClientOption, 0),
 		logger: logger,
-		locker: &sync.RWMutex{},
 	}
 }
 
@@ -67,7 +64,7 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 }
 
 func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) error {
-	conn, err := s.connect(context.TODO(), opts...)
+	conn, err := s.connect(ctx, opts...)
 	if err != nil {
 		return err
 	}
@@ -77,7 +74,7 @@ func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) er
 
 func (s *CustomConn) connect(ctx context.Context, opts ...kgrpc.ClientOption) (*grpc.ClientConn, error) {
 	clientOpts := append(s.opts, opts...)
-	conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+	conn, err := kgrpc.DialInsecure(ctx, clientOpts...)
 
 	if err != nil {
 		return nil, err
@@ -86,12 +83,6 @@ func (s *CustomConn) connect(ctx context.Context, opts ...kgrpc.ClientOption) (*
 }
 
 func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	l := s.locker.RLocker()
-	l.Lock()
-	defer func() {
-		l.Unlock()
-	}()
-
 	return s.pickup().Invoke(ctx, method, args, reply, opts...)
 }
 
