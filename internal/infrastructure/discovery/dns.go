@@ -120,6 +120,7 @@ func (m *DNSWatcher) lookup() {
 		}
 	}
 
+	hasChanged := false
 	latest := make(map[string]*registry.ServiceInstance, 0)
 	for _, v := range srvs {
 		addrs, err := net.LookupHost(v.Target)
@@ -133,6 +134,7 @@ func (m *DNSWatcher) lookup() {
 			if v, ok := m.latest[id]; ok {
 				latest[id] = v
 			} else {
+				hasChanged = true
 				latest[id] = &registry.ServiceInstance{
 					ID:        id,
 					Name:      m.name,
@@ -149,9 +151,12 @@ func (m *DNSWatcher) lookup() {
 			continue
 		}
 		m.latest = latest
-		m.changed <- struct{}{}
+		hasChanged = true
 		m.log.Debugf("resolve host found, serviceName=%s changed", m.name)
 		break
+	}
+	if hasChanged {
+		m.changed <- struct{}{}
 	}
 }
 
