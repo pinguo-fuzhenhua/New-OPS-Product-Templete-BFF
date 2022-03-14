@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/url"
+	"sync"
 	"sync/atomic"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -25,6 +26,7 @@ type CustomConn struct {
 	offset        int
 	count         int64
 	notify        chan []*registry.ServiceInstance
+	locker        *sync.RWMutex
 }
 
 func NewCustomConn(logger *log.Helper) *CustomConn {
@@ -33,6 +35,7 @@ func NewCustomConn(logger *log.Helper) *CustomConn {
 		opts:   make([]kgrpc.ClientOption, 0),
 		logger: logger,
 		notify: make(chan []*registry.ServiceInstance, 10),
+		locker: &sync.RWMutex{},
 	}
 	go x.watch()
 	return x
@@ -54,7 +57,7 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 }
 
 func (s *CustomConn) watch() {
-	for instances := range s.notify {
+	update := func(instances []*registry.ServiceInstance) {
 		conns := make([]CustomGRPCConn, 0)
 		for _, ins := range instances {
 			for _, endpoint := range ins.Endpoints {
@@ -67,10 +70,21 @@ func (s *CustomConn) watch() {
 				}
 			}
 		}
+
+		if len(s.conns) > 50 {
+			s.locker.Lock()
+			defer s.locker.Unlock()
+			s.conns = conns
+			s.offset = 0
+		} else {
+			s.conns = append(s.conns, conns...)
+			s.offset = len(s.conns)
+		}
 		s.endpointCount = len(conns)
-		s.offset = len(s.conns)
 		s.logger.Debugf("offset=%v, endpointcount=%v", s.offset, s.endpointCount)
-		s.conns = append(s.conns, conns...)
+	}
+	for instances := range s.notify {
+		update(instances)
 	}
 }
 
@@ -98,6 +112,9 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 }
 
 func (s *CustomConn) pickup() grpc.ClientConnInterface {
+	s.locker.RLock()
+	defer s.locker.RUnlock()
+
 	conn := s.conns[s.offset]
 	if s.endpointCount > 1 {
 		x := atomic.AddInt64(&s.count, 1)
