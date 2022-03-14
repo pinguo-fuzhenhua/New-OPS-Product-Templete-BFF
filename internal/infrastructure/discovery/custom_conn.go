@@ -18,11 +18,12 @@ type CustomGRPCConn interface {
 }
 
 type CustomConn struct {
-	conns  []CustomGRPCConn
-	opts   []kgrpc.ClientOption
-	logger *log.Helper
-	offset int
-	count  int64
+	conns         []CustomGRPCConn
+	opts          []kgrpc.ClientOption
+	logger        *log.Helper
+	endpointCount int
+	offset        int
+	count         int64
 }
 
 func NewCustomConn(logger *log.Helper) *CustomConn {
@@ -59,8 +60,9 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 			}
 		}
 	}
+	s.endpointCount = len(conns)
 	s.offset = len(s.conns)
-	s.conns = append(conns, conns...)
+	s.conns = append(s.conns, conns...)
 }
 
 func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) error {
@@ -87,11 +89,10 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 }
 
 func (s *CustomConn) pickup() grpc.ClientConnInterface {
-	length := len(s.conns)
-	conn := s.conns[0]
-	if length > 1 {
+	conn := s.conns[s.offset]
+	if s.endpointCount > 1 {
 		x := atomic.AddInt64(&s.count, 1)
-		idx := int(x)%(length) + s.offset
+		idx := int(x)%s.endpointCount + s.offset
 		conn = s.conns[idx]
 	}
 	return conn
