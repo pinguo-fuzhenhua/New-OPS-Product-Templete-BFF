@@ -2,7 +2,6 @@ package discovery
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/url"
 	"sync/atomic"
@@ -91,10 +90,11 @@ func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}
 
 func (s *CustomConn) pickup() grpc.ClientConnInterface {
 	conn := s.conns[s.offset]
+	s.logger.Debugf("offset=%v, endpointcount=%v", s.offset, s.endpointCount)
 	if s.endpointCount > 1 {
 		x := atomic.AddInt64(&s.count, 1)
 		idx := int(x)%s.endpointCount + s.offset
-		fmt.Println("index", idx, s.endpointCount)
+		s.logger.Debugf("index=%v, endpointcount=%v", idx, s.endpointCount)
 		conn = s.conns[idx]
 	}
 	return conn
