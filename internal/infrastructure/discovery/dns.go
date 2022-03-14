@@ -65,7 +65,11 @@ type DNSWatcher struct {
 }
 
 func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
-	<-m.changed
+	if m.latest == nil {
+		time.Sleep(time.Second)
+	} else {
+		<-m.changed
+	}
 	return m.toArray(), nil
 }
 
@@ -82,14 +86,14 @@ func (m *DNSWatcher) toArray() []*registry.ServiceInstance {
 func (m *DNSWatcher) watch() {
 	for {
 		// 每5重新解析dns
-		m.watch1()
+		m.lookup()
 		time.Sleep(time.Second * 5)
 	}
 }
-func (m *DNSWatcher) watch1() {
+func (m *DNSWatcher) lookup() {
 	_, srvs, err := net.LookupSRV("grpclb", "tcp", m.name)
 	if err != nil {
-		m.log.Debugf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
+		// m.log.Debugf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
 		srvs = make([]*net.SRV, 0)
 	}
 
@@ -140,6 +144,7 @@ func (m *DNSWatcher) watch1() {
 		}
 		m.latest = latest
 		m.changed <- struct{}{}
+		m.log.Debugf("resolve host found, serviceName=%s changed", m.name)
 		break
 	}
 }
