@@ -11,13 +11,13 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 )
 
-// type SetCallback func(serviceName string) Callback
-// type Callback func(instances []*registry.ServiceInstance)
+type Callback func(instances []*registry.ServiceInstance)
 
-func NewDNSDiscovery(log *log.Helper) registry.Discovery {
+func NewDNSDiscovery(log *log.Helper, callback Callback) registry.Discovery {
 	return &DNSDiscovery{
 		services: map[string]registry.Watcher{},
 		log:      log,
+		callback: callback,
 	}
 }
 
@@ -26,6 +26,7 @@ func NewDNSDiscovery(log *log.Helper) registry.Discovery {
 type DNSDiscovery struct {
 	services map[string]registry.Watcher
 	log      *log.Helper
+	callback Callback
 }
 
 func (s *DNSDiscovery) GetService(ctx context.Context, serviceName string) ([]*registry.ServiceInstance, error) {
@@ -46,10 +47,11 @@ func (s *DNSDiscovery) Watch(ctx context.Context, serviceName string) (registry.
 		return v, nil
 	}
 	dw := &DNSWatcher{
-		name:    serviceName,
-		port:    port,
-		changed: make(chan struct{}, 1),
-		log:     s.log,
+		name:     serviceName,
+		port:     port,
+		changed:  make(chan struct{}, 1),
+		log:      s.log,
+		callback: s.callback,
 	}
 	go dw.watch()
 	s.services[serviceName] = dw
@@ -57,11 +59,12 @@ func (s *DNSDiscovery) Watch(ctx context.Context, serviceName string) (registry.
 }
 
 type DNSWatcher struct {
-	port    string
-	name    string
-	changed chan struct{}
-	latest  map[string]*registry.ServiceInstance
-	log     *log.Helper
+	port     string
+	name     string
+	changed  chan struct{}
+	latest   map[string]*registry.ServiceInstance
+	log      *log.Helper
+	callback Callback
 }
 
 func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
@@ -69,6 +72,9 @@ func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
 		time.Sleep(time.Second)
 	} else {
 		<-m.changed
+	}
+	if m.callback != nil {
+		go m.callback(m.toArray())
 	}
 	return m.toArray(), nil
 }

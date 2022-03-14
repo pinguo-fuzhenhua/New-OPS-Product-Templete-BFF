@@ -2,16 +2,15 @@ package discovery
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/url"
-	"time"
+	"sync"
+	"sync/atomic"
 
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
-	"go.uber.org/atomic"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 )
 
 type CustomGRPCConn interface {
@@ -20,25 +19,26 @@ type CustomGRPCConn interface {
 }
 
 type CustomConn struct {
-	conns       []CustomGRPCConn
-	serviceName string
-	factory     func(opts ...kgrpc.ClientOption) (*grpc.ClientConn, error)
-	endpoints   []string
-	count       atomic.Int64
+	conns  []CustomGRPCConn
+	opts   []kgrpc.ClientOption
+	logger *log.Helper
+	locker *sync.RWMutex
+	count  int64
 }
 
-func NewCustomConn() *CustomConn {
+func NewCustomConn(logger *log.Helper) *CustomConn {
 	return &CustomConn{
-		conns: make([]CustomGRPCConn, 0),
+		conns:  make([]CustomGRPCConn, 0),
+		opts:   make([]kgrpc.ClientOption, 0),
+		logger: logger,
+		locker: &sync.RWMutex{},
 	}
 }
 
-func (s *CustomConn) SetFactory(fn func(opts ...kgrpc.ClientOption) (*grpc.ClientConn, error)) {
-	s.factory = fn
+func (s *CustomConn) WithKGRPCClientOption(opts ...kgrpc.ClientOption) {
+	s.opts = opts
 }
-func (s *CustomConn) SetServiceName(n string) {
-	s.serviceName = n
-}
+
 func (s *CustomConn) close() error {
 	for _, c := range s.conns {
 		c.Close()
@@ -47,62 +47,70 @@ func (s *CustomConn) close() error {
 }
 
 func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
-	go func() {
-		time.Sleep(time.Second * 5)
-		newEndpoints := []string{}
-		for _, ins := range instances {
-			for _, endpoint := range ins.Endpoints {
-				fmt.Println(endpoint)
-				tmp, _ := url.Parse(endpoint)
-				fmt.Println(tmp.Host)
-				err := s.Connect(kgrpc.WithEndpoint(tmp.Host))
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					newEndpoints = append(newEndpoints, endpoint)
-				}
+	newEndpoints := []string{}
+	conns := make([]CustomGRPCConn, 0)
+	for _, ins := range instances {
+		for _, endpoint := range ins.Endpoints {
+			tmp, _ := url.Parse(endpoint)
+			conn, err := s.connect(context.Background(), kgrpc.WithEndpoint(tmp.Host))
+			conns = append(conns, conn)
+			if err != nil {
+				s.logger.Errorf("connect server error,host=%s,message=%s", tmp.Host, err.Error())
+			} else {
+				newEndpoints = append(newEndpoints, endpoint)
 			}
 		}
-		s.endpoints = newEndpoints
-	}()
+	}
+	s.locker.Lock()
+	defer s.locker.Unlock()
+	s.conns = conns
 }
 
-// Connect
-// @TODO 初次启动的时候会连两次
-func (s *CustomConn) Connect(opts ...kgrpc.ClientOption) error {
-	conn, err := s.factory(opts...)
+func (s *CustomConn) Connect(ctx context.Context, opts ...kgrpc.ClientOption) error {
+	conn, err := s.connect(context.TODO(), opts...)
 	if err != nil {
 		return err
-	}
-	for i := 0; i < 5; i++ {
-		if conn.GetState() == connectivity.Ready {
-			break
-		}
-		time.Sleep(time.Second)
 	}
 	s.conns = append(s.conns, conn)
 	return nil
 }
 
-func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	maxIdx := len(s.conns) - 1
-	conn := s.conns[maxIdx]
-	if ac := len(s.endpoints); ac > 1 {
-		i := s.count.Inc() % int64(ac)
-		idx := maxIdx - ac + 1 + int(i)
-		if idx > maxIdx {
-			idx = maxIdx
-		}
-		conn = s.conns[idx]
+func (s *CustomConn) connect(ctx context.Context, opts ...kgrpc.ClientOption) (*grpc.ClientConn, error) {
+	clientOpts := append(s.opts, opts...)
+	conn, err := kgrpc.DialInsecure(context.TODO(), clientOpts...)
+
+	if err != nil {
+		return nil, err
 	}
-	return conn.Invoke(ctx, method, args, reply, opts...)
+	return conn, nil
 }
 
-func (s CustomConn) Close() error {
+func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	l := s.locker.RLocker()
+	l.Lock()
+	defer func() {
+		l.Unlock()
+	}()
+
+	return s.pickup().Invoke(ctx, method, args, reply, opts...)
+}
+
+func (s *CustomConn) pickup() grpc.ClientConnInterface {
+	length := len(s.conns)
+	conn := s.conns[0]
+	if length > 1 {
+		x := atomic.AddInt64(&s.count, 1)
+		idx := x % int64(length)
+		conn = s.conns[idx]
+	}
+	return conn
+}
+
+func (s *CustomConn) Close() error {
 	return s.close()
 }
 
 // NewStream begins a streaming RPC.
 func (s *CustomConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	return s.conns[0].NewStream(ctx, desc, method, opts...)
+	return s.pickup().NewStream(ctx, desc, method, opts...)
 }
