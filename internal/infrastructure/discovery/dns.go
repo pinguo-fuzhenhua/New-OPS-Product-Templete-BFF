@@ -145,18 +145,18 @@ func (m *DNSWatcher) lookup() {
 			}
 		}
 	}
-	m.latest = latest
-	for n, _ := range m.latest {
-		if _, ok := latest[n]; ok {
-			continue
+	if !hasChanged {
+		for n, _ := range m.latest {
+			if _, ok := latest[n]; ok {
+				continue
+			}
+			hasChanged = true
+			break
 		}
-		m.latest = latest
-		hasChanged = true
-		m.log.Debugf("resolve host found, serviceName=%s changed", m.name)
-		break
 	}
 	if hasChanged {
 		m.changed <- struct{}{}
+		m.latest = latest
 	}
 }
 
