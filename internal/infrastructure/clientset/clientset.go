@@ -109,6 +109,7 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 	return r, nil
 }
 
+// newConnectionWithDNSDiscover 临时解决方案,需要服务发现
 func newConnectionWithDNSDiscover(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
 	r := make([]discovery.CustomGRPCConn, len(connData))
 	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
