@@ -70,18 +70,18 @@ func (s *CustomConn) watch() {
 				}
 			}
 		}
-
-		if len(s.conns) > 50 {
+		oldCount := len(s.conns)
+		if oldCount > 50 {
 			s.locker.Lock()
 			defer s.locker.Unlock()
 			s.conns = conns
 			s.offset = 0
 		} else {
 			s.conns = append(s.conns, conns...)
-			s.offset = len(s.conns)
+			s.offset = oldCount
 		}
 		s.endpointCount = len(conns)
-		s.logger.Debugf("offset=%v, endpointcount=%v", s.offset, s.endpointCount)
+		s.logger.Debugf("offset=%v, endpointcount=%v, total=%v", s.offset, s.endpointCount, len(s.conns))
 	}
 	for instances := range s.notify {
 		update(instances)
