@@ -130,7 +130,6 @@ func (m *DNSWatcher) lookup() {
 		}
 		for _, addr := range addrs {
 			id := fmt.Sprintf("%s:%s", addr, m.port)
-			m.log.Debugf("resolve host found, serviceName=%s, instance=%s", m.name, id)
 			if v, ok := m.latest[id]; ok {
 				latest[id] = v
 			} else {
