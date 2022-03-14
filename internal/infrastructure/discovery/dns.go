@@ -155,8 +155,8 @@ func (m *DNSWatcher) lookup() {
 		}
 	}
 	if hasChanged {
-		m.changed <- struct{}{}
 		m.latest = latest
+		m.changed <- struct{}{}
 	}
 }
 
