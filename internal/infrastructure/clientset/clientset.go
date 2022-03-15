@@ -31,7 +31,7 @@ type ClientSet struct {
 
 // NewClientSet new gRPC Client Set
 func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.TracerProvider) (*ClientSet, func(), error) {
-	conns, err := newConnection(
+	conns, err := newConnectionWithDNSDiscover(
 		logger,
 		traceProvider,
 		connInfo{addr: c.FieldDef},
