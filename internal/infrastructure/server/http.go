@@ -3,14 +3,13 @@ package server
 import (
 	"context"
 	"net/http"
-	http2 "net/http"
-	"runtime"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/encoding"
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
@@ -45,18 +44,18 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 	)
 
 	var opts = []khttp.ServerOption{
-		// khttp.Logger(logger),
+		khttp.Logger(logger),
 		khttp.Address(config.Address),
 		khttp.Timeout(config.Timeout),
 		khttp.ErrorEncoder(buildErrorEncoder(logger)),
 		khttp.Middleware(
 			recovery.Recovery(recovery.WithLogger(loggerWithMethod)),
-			// logging.Server(loggerWithMethod),
+			logging.Server(loggerWithMethod),
 		),
-		// khttp.Filter(
-		// 	traceFilter(tracerProvider),
-		// 	cparam.Filter(),
-		// ),
+		khttp.Filter(
+			traceFilter(tracerProvider),
+			cparam.Filter(),
+		),
 	}
 
 	svc := khttp.NewServer(opts...)
@@ -70,11 +69,7 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 
 		svc.Shutdown(ctx)
 	}
-	go func() {
-		runtime.SetBlockProfileRate(5)
-		log.NewHelper(logger).Infof("[HTTP] server pprof listening on 0.0.0.0:8888")
-		http2.ListenAndServe("0.0.0.0:8888", nil)
-	}()
+
 	return svc, cancelFn
 }
 
