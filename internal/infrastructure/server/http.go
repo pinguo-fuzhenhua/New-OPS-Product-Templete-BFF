@@ -43,13 +43,13 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 	)
 
 	var opts = []khttp.ServerOption{
-		khttp.Logger(logger),
+		// khttp.Logger(logger),
 		khttp.Address(config.Address),
 		khttp.Timeout(config.Timeout),
 		khttp.ErrorEncoder(buildErrorEncoder(logger)),
 		khttp.Middleware(
 			recovery.Recovery(recovery.WithLogger(loggerWithMethod)),
-			//logging.Server(loggerWithMethod),
+			// logging.Server(loggerWithMethod),
 		),
 		// khttp.Filter(
 		// 	traceFilter(tracerProvider),
