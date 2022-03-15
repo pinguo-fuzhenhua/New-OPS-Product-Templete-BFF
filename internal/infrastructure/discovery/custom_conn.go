@@ -83,7 +83,6 @@ func (s *CustomConn) watch() {
 			}
 		}
 		cancel()
-		s.conns = conns
 		ctx, cancel = context.WithCancel(context.Background())
 		total := len(s.conn)
 		go s.pickup(ctx, conns)
@@ -96,6 +95,7 @@ func (s *CustomConn) watch() {
 				}
 			}
 		}()
+		s.conns = conns
 	}
 	for instances := range s.notify {
 		update(instances)
