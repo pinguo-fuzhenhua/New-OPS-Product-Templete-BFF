@@ -9,7 +9,6 @@ import (
 	"github.com/go-kratos/kratos/v2/encoding/json"
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
@@ -50,12 +49,12 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 		khttp.ErrorEncoder(buildErrorEncoder(logger)),
 		khttp.Middleware(
 			recovery.Recovery(recovery.WithLogger(loggerWithMethod)),
-			logging.Server(loggerWithMethod),
+			//logging.Server(loggerWithMethod),
 		),
-		khttp.Filter(
-			traceFilter(tracerProvider),
-			cparam.Filter(),
-		),
+		// khttp.Filter(
+		// 	traceFilter(tracerProvider),
+		// 	cparam.Filter(),
+		// ),
 	}
 
 	svc := khttp.NewServer(opts...)
