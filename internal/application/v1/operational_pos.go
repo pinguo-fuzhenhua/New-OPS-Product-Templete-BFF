@@ -28,6 +28,7 @@ type OperationalPos struct {
 }
 
 func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
+	return map[string]interface{}{}, nil
 	ctx2, tracer, span := o.TracerFactory.Debug(context.Context(ctx), "PullByCodes")
 	defer span.End()
 
