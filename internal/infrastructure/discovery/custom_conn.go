@@ -84,7 +84,17 @@ func (s *CustomConn) watch() {
 		}
 		cancel()
 		ctx, cancel = context.WithCancel(context.Background())
+		total := len(s.conn)
 		go s.pickup(ctx, conns)
+		go func() {
+			t := time.After(time.Second * 30)
+			for i := 0; i < total; i++ {
+				select {
+				case <-s.conn:
+				case <-t:
+				}
+			}
+		}()
 		s.conns = conns
 	}
 	for instances := range s.notify {
