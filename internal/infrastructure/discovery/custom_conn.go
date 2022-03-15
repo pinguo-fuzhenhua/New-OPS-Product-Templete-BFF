@@ -30,7 +30,7 @@ func NewCustomConn(logger *log.Helper) *CustomConn {
 		opts:   make([]kgrpc.ClientOption, 0),
 		logger: logger,
 		notify: make(chan []*registry.ServiceInstance, 10),
-		conn:   make(chan CustomGRPCConn, 10),
+		conn:   make(chan CustomGRPCConn, 2),
 	}
 	go x.watch()
 	return x
