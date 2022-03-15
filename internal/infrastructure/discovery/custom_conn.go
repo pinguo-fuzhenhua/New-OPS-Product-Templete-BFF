@@ -53,6 +53,9 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 
 func (s *CustomConn) pickup(ctx context.Context, conns []CustomGRPCConn) {
 	for {
+		if len(conns) == 0 {
+			time.Sleep(time.Second)
+		}
 		for _, conn := range conns {
 			select {
 			case <-ctx.Done():
@@ -60,9 +63,6 @@ func (s *CustomConn) pickup(ctx context.Context, conns []CustomGRPCConn) {
 			default:
 				s.conn <- conn
 			}
-		}
-		if len(conns) == 0 {
-			time.Sleep(time.Second)
 		}
 	}
 }
