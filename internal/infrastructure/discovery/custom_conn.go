@@ -4,8 +4,7 @@ import (
 	"context"
 	"io"
 	"net/url"
-	"sync"
-	"sync/atomic"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -19,23 +18,19 @@ type CustomGRPCConn interface {
 }
 
 type CustomConn struct {
-	conns         []CustomGRPCConn
-	opts          []kgrpc.ClientOption
-	logger        *log.Helper
-	endpointCount int
-	offset        int
-	count         int64
-	notify        chan []*registry.ServiceInstance
-	locker        *sync.RWMutex
+	conns  []CustomGRPCConn
+	opts   []kgrpc.ClientOption
+	logger *log.Helper
+	notify chan []*registry.ServiceInstance
+	conn   chan CustomGRPCConn
 }
 
 func NewCustomConn(logger *log.Helper) *CustomConn {
 	x := &CustomConn{
-		conns:  make([]CustomGRPCConn, 0),
 		opts:   make([]kgrpc.ClientOption, 0),
 		logger: logger,
 		notify: make(chan []*registry.ServiceInstance, 10),
-		locker: &sync.RWMutex{},
+		conn:   make(chan CustomGRPCConn, 2),
 	}
 	go x.watch()
 	return x
@@ -56,7 +51,24 @@ func (s *CustomConn) Notify(instances []*registry.ServiceInstance) {
 	s.notify <- instances
 }
 
+func (s *CustomConn) pickup(ctx context.Context, conns []CustomGRPCConn) {
+	for {
+		if len(conns) == 0 {
+			time.Sleep(time.Second)
+		}
+		for _, conn := range conns {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				s.conn <- conn
+			}
+		}
+	}
+}
 func (s *CustomConn) watch() {
+	ctx, cancel := context.WithCancel(context.Background())
+	go s.pickup(ctx, s.conns)
 	update := func(instances []*registry.ServiceInstance) {
 		conns := make([]CustomGRPCConn, 0)
 		for _, ins := range instances {
@@ -70,18 +82,20 @@ func (s *CustomConn) watch() {
 				}
 			}
 		}
-		oldCount := len(s.conns)
-		if oldCount > 50 {
-			s.locker.Lock()
-			defer s.locker.Unlock()
-			s.conns = conns
-			s.offset = 0
-		} else {
-			s.conns = append(s.conns, conns...)
-			s.offset = oldCount
-		}
-		s.endpointCount = len(conns)
-		s.logger.Debugf("offset=%v, endpointcount=%v, total=%v", s.offset, s.endpointCount, len(s.conns))
+		cancel()
+		ctx, cancel = context.WithCancel(context.Background())
+		total := len(s.conn)
+		go s.pickup(ctx, conns)
+		go func() {
+			t := time.After(time.Second * 30)
+			for i := 0; i < total; i++ {
+				select {
+				case <-s.conn:
+				case <-t:
+				}
+			}
+		}()
+		s.conns = conns
 	}
 	for instances := range s.notify {
 		update(instances)
@@ -108,20 +122,8 @@ func (s *CustomConn) connect(ctx context.Context, opts ...kgrpc.ClientOption) (*
 }
 
 func (s *CustomConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	return s.pickup().Invoke(ctx, method, args, reply, opts...)
-}
-
-func (s *CustomConn) pickup() grpc.ClientConnInterface {
-	s.locker.RLock()
-	defer s.locker.RUnlock()
-
-	conn := s.conns[s.offset]
-	if s.endpointCount > 1 {
-		x := atomic.AddInt64(&s.count, 1)
-		idx := int(x)%s.endpointCount + s.offset
-		conn = s.conns[idx]
-	}
-	return conn
+	c := <-s.conn
+	return c.Invoke(ctx, method, args, reply, opts...)
 }
 
 func (s *CustomConn) Close() error {
@@ -130,5 +132,6 @@ func (s *CustomConn) Close() error {
 
 // NewStream begins a streaming RPC.
 func (s *CustomConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	return s.pickup().NewStream(ctx, desc, method, opts...)
+	c := <-s.conn
+	return c.NewStream(ctx, desc, method, opts...)
 }
