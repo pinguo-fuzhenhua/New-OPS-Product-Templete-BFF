@@ -36,7 +36,7 @@ func newUserDependOnInitTimestampNatural(initTime, utcOffset, diffDay int64) boo
 	it := time.Unix(initTime, 0).In(loc)
 
 	nowZero := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
-	itZero := time.Date(it.Year(), it.Month(), it.Day(), 0, 0, 1, 0, loc)
+	itZero := time.Date(it.Year(), it.Month(), it.Day(), 0, 0, 0, 0, loc)
 
-	return itZero.Add(time.Duration(24*diffDay) * time.Hour).Before(nowZero)
+	return itZero.Add(time.Duration(24*diffDay) * time.Hour).After(nowZero)
 }
