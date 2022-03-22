@@ -65,20 +65,18 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 			},
 		}
 
-		if isNewUser := ctx.Form().Get("isNewUser"); isNewUser != "" {
-			b, err := strconv.ParseBool(isNewUser)
-			if err == nil {
-				in.UserData.IsNewUser = wrapperspb.Bool(b)
-				in.UserData.Properties["fornewuser"] = isNewUser
-			}
-		}
-		if in.UserData.IsNewUser == nil {
-			v := domain.IsNewUser(cp, ctx.Request())
-			in.UserData.IsNewUser = wrapperspb.Bool(v)
-			in.UserData.Properties["fornewuser"] = "0"
-			if v {
-				in.UserData.Properties["fornewuser"] = "1"
-			}
+		// if isNewUser := ctx.Form().Get("isNewUser"); isNewUser != "" {
+		// 	b, err := strconv.ParseBool(isNewUser)
+		// 	if err == nil {
+		// 		in.UserData.IsNewUser = wrapperspb.Bool(b)
+		// 		in.UserData.Properties["fornewuser"] = isNewUser
+		// 	}
+		// }
+		v := domain.IsNewUser(cp, ctx.Request())
+		in.UserData.IsNewUser = wrapperspb.Bool(v)
+		in.UserData.Properties["fornewuser"] = "0"
+		if v {
+			in.UserData.Properties["fornewuser"] = "1"
 		}
 		o.rewriteForPreview(ctx, in)
 		var langMatcher language.Matcher
