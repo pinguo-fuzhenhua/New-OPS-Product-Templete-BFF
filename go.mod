@@ -8,10 +8,10 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
-	github.com/pinguo-icc/go-base/v2 v2.5.3
+	github.com/pinguo-icc/go-base/v2 v2.5.4
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
-	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472
+	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
