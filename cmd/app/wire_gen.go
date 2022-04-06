@@ -36,8 +36,13 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		ClientSet: clientSet,
 		Parser:    activitiesParser,
 	}
+	dataEnv := &v1.DataEnv{
+		ClientSet:     clientSet,
+		TracerFactory: factory,
+	}
 	routerDefines := &application.RouterDefines{
-		OPos: operationalPos,
+		OPos:    operationalPos,
+		DataEnv: dataEnv,
 	}
 	httpServer, cleanup2 := server.NewHttpServer(http, tracerProvider, logger, routerDefines)
 	app := newApp(bootstrap, logger, httpServer)
