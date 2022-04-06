@@ -41,4 +41,5 @@ type Clientset struct {
 	FieldDef       string
 	OperationalPos string
 	Material       string
+	DataEnv        string
 }

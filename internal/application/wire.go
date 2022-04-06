@@ -8,6 +8,7 @@ import (
 
 var ProviderSet = wire.NewSet(
 	wire.Struct(new(v1.OperationalPos), "*"),
+	wire.Struct(new(v1.DataEnv), "*"),
 	wire.Struct(new(RouterDefines), "*"),
 	// NewApp,
 	wire.Bind(new(server.Register), new(*RouterDefines)),
