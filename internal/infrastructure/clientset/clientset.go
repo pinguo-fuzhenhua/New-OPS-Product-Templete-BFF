@@ -16,6 +16,7 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/discovery"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
+	dataEnvApi "github.com/pinguo-icc/operations-data-env-svc/api"
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
@@ -27,6 +28,7 @@ type ClientSet struct {
 	oppapi.OperationalPositionsClient
 	opmapi.CategoryServiceClient
 	opmapi.MaterialServiceClient
+	dataEnvApi.OperationsDataEnvClient
 }
 
 // NewClientSet new gRPC Client Set
@@ -37,6 +39,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		connInfo{addr: c.FieldDef},
 		connInfo{addr: c.OperationalPos, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 		connInfo{addr: c.Material},
+		connInfo{addr: c.DataEnv, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -53,6 +56,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		OperationalPositionsClient: oppapi.NewOperationalPositionsClient(conns[1]),
 		CategoryServiceClient:      opmapi.NewCategoryServiceClient(conns[2]),
 		MaterialServiceClient:      opmapi.NewMaterialServiceClient(conns[2]),
+		OperationsDataEnvClient:	dataEnvApi.NewOperationsDataEnvClient(conns[3]),
 	}
 
 	return h, cancelFn, nil

@@ -3,15 +3,18 @@ module github.com/pinguo-icc/Camera360
 go 1.17
 
 require (
-	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220218005927-cde962a6c161
-	github.com/go-kratos/kratos/v2 v2.1.5
+	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220225041641-2ee4e5f37aaa
+	github.com/go-kratos/kratos/v2 v2.2.0
+	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
 	github.com/pinguo-icc/go-base/v2 v2.5.3
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
+	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472
+	github.com/pinguo-icc/operations-data-env-svc v0.0.1
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
@@ -34,7 +37,6 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/glog v1.0.0 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
@@ -47,7 +49,6 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/olivere/elastic/v7 v7.0.26 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
-	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220310061547-ef24ed73e3f1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/qiniu/go-sdk/v7 v7.11.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
