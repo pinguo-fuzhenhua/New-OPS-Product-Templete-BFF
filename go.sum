@@ -654,8 +654,9 @@ github.com/pinguo-icc/kratos-library/v2 v2.1.5-0.20211102030305-cf1a20884c80/go.
 github.com/pinguo-icc/kratos-library/v2 v2.1.7/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8 h1:pu1v99Y2xXADB+Epo3QI3Y63hGbZ9MPu1OGZuSR68CQ=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
-github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066 h1:cruiHiG8FPIUUJCaozvDhayKL+6NbpefksuFxVwY/G8=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220407070632-0559081dcc14 h1:gul0LvatauBM7+z/0BT9Y+4Lj1PPREUzi0OZr7NY6uc=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220407070632-0559081dcc14/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472 h1:EJx5KqDgxgv4QZuRTILVKF1bCkuvHky5uAWXkR+xtos=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220221021048-e32a7ee1f472/go.mod h1:WQbjccDuOE3Urdxe69qe1jpj97MdTXLilAWVA3MQQlE=
 github.com/pinguo-icc/operations-data-env-svc v0.0.1 h1:pA/h5lANeBPVNMOae3mmTtEKtP7fcbCPY946VnFy5EU=
