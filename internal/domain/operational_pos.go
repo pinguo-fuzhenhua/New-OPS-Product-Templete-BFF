@@ -5,9 +5,10 @@ package domain
 import (
 	"bytes"
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"hash/fnv"
 	"strconv"
 
 	fdapi "github.com/pinguo-icc/field-definitions/api"
@@ -35,7 +36,7 @@ type Activity struct {
 	ID        string
 	PID       string
 	RootID    string
-	TrackID   uint64
+	TrackID   string
 	FieldCode string
 	Name      string
 	Period    period
@@ -66,7 +67,7 @@ func (a *Activity) MarshalJSON() ([]byte, error) {
 		a.writeBaseKV(buf, "id", a.ID)
 		a.writeBaseKV(buf, "pid", a.PID)
 		a.writeBaseKV(buf, "rootId", a.RootID)
-		a.writeBaseKV(buf, "trackId", strconv.FormatUint(a.TrackID, 10))
+		a.writeBaseKV(buf, "trackId", a.TrackID)
 		a.writeBaseKV(buf, "fieldCode", a.FieldCode)
 		a.writeBaseKV(buf, "name", a.Name)
 
@@ -220,8 +221,7 @@ func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]
 	return ap.pFac.MGet(ctx, fDefIDs)
 }
 
-func (ap *ActivitiesParser) generateTrackID(planID, contentID, activityID string) uint64 {
-	h := fnv.New64a()
-	h.Write([]byte(planID + contentID + activityID))
-	return h.Sum64()
+func (ap *ActivitiesParser) generateTrackID(planID, contentID, activityID string) string {
+	v := sha1.Sum([]byte(planID + contentID + activityID))
+	return hex.EncodeToString(v[:])
 }
