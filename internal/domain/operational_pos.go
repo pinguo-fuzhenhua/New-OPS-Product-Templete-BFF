@@ -5,10 +5,9 @@ package domain
 import (
 	"bytes"
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"strconv"
 
 	fdapi "github.com/pinguo-icc/field-definitions/api"
@@ -222,6 +221,8 @@ func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]
 }
 
 func (ap *ActivitiesParser) generateTrackID(planID, contentID, activityID string) string {
-	v := sha1.Sum([]byte(planID + contentID + activityID))
-	return hex.EncodeToString(v[:])
+	h := fnv.New64a()
+	h.Write([]byte(planID + contentID + activityID))
+	d := int64(h.Sum64())
+	return strconv.FormatInt(d, 10)
 }
