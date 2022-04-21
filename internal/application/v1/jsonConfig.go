@@ -31,6 +31,9 @@ func (j *JsonConfig) Show(ctx khttp.Context) (res interface{}, err error) {
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal([]byte(data.Content), &res)
+	err = json.Unmarshal([]byte(data.Content), &res)
+	if err != nil {
+		return nil, err
+	}
 	return res, nil
 }
