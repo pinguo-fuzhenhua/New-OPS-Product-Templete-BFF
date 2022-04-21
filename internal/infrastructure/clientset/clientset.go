@@ -2,6 +2,7 @@ package clientset
 
 import (
 	"context"
+	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
 	"strings"
 	"time"
 
@@ -27,6 +28,7 @@ type ClientSet struct {
 	oppapi.OperationalPositionsClient
 	opmapi.CategoryServiceClient
 	opmapi.MaterialServiceClient
+	opbasic.OperationalBasicClient
 }
 
 // NewClientSet new gRPC Client Set
@@ -37,6 +39,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		connInfo{addr: c.FieldDef},
 		connInfo{addr: c.OperationalPos, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 		connInfo{addr: c.Material},
+		connInfo{addr: c.OperationalBasicSvcAddr},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -53,6 +56,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		OperationalPositionsClient: oppapi.NewOperationalPositionsClient(conns[1]),
 		CategoryServiceClient:      opmapi.NewCategoryServiceClient(conns[2]),
 		MaterialServiceClient:      opmapi.NewMaterialServiceClient(conns[2]),
+		OperationalBasicClient:     opbasic.NewOperationalBasicClient(conns[3]),
 	}
 
 	return h, cancelFn, nil

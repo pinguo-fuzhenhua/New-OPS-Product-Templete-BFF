@@ -26,4 +26,5 @@ clientSet:
     fieldDef: dns:///field-definitions.operation-placing-system:9000
     operationalPos: dns:///operational-positions.operation-placing-system:9000
     material: dns:///operations-materials.operation-placing-system:9000
+    operationalBasicSvcAddr: dns:///operational-basic:9000
 params:
