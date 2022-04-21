@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
@@ -26,9 +27,10 @@ func (j *JsonConfig) Show(ctx khttp.Context) (res interface{}, err error) {
 		AppName: appName,
 		Code:    code,
 	}
-	res, err = j.Opbasic.JsonConfigShow(ctx, req)
+	data, err := j.Opbasic.JsonConfigShow(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+	json.Unmarshal([]byte(data.Content), &res)
 	return res, nil
 }
