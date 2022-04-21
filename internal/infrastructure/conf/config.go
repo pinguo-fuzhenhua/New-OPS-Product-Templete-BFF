@@ -42,4 +42,5 @@ type Clientset struct {
 	OperationalPos string
 	Material       string
 	DataEnv        string
+	OperationalBasicSvcAddr string
 }
