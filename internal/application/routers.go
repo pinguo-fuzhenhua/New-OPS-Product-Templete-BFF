@@ -1,11 +1,10 @@
 package application
 
 import (
+	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/mux"
 	v1 "github.com/pinguo-icc/Camera360/internal/application/v1"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
-
-	khttp "github.com/go-kratos/kratos/v2/transport/http"
 )
 
 type Context = khttp.Context
@@ -17,7 +16,8 @@ func PathParam(ctx Context, name string) (val string, ok bool) {
 }
 
 type RouterDefines struct {
-	OPos *v1.OperationalPos
+	OPos    *v1.OperationalPos
+	OpBasic *v1.JsonConfig
 }
 
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
@@ -26,5 +26,6 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
+		v1.GET("/json-config-show", H(rd.OpBasic.Show))
 	}
 }
