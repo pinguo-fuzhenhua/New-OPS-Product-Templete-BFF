@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"strconv"
 	"strings"
 
@@ -12,9 +11,7 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
-	"github.com/pinguo-icc/kratos-library/v2/trace"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
-	"golang.org/x/text/language"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -23,85 +20,57 @@ import (
 type OperationalPos struct {
 	*clientset.ClientSet
 
-	Parser        *domain.ActivitiesParser
-	TracerFactory *trace.Factory
+	Parser *domain.ActivitiesParser
 }
 
 func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
-	ctx2, tracer, span := o.TracerFactory.Debug(context.Context(ctx), "PullByCodes")
-	defer span.End()
-
 	posCodes := strings.TrimSpace(ctx.Form().Get("codes"))
 	if posCodes == "" {
-		return nil, kerr.BadRequest("invalid param", "invalid param")
+		return nil, kerr.BadRequest("invalid param, codes required", "invalid param")
 	}
 
 	cp := cparam.FromContext(ctx)
-
-	in, langMatcher, err2 := func() (*opapi.PlacingRequest, language.Matcher, error) {
-		ctx3, span := tracer.Start(ctx2, "PullByCodes.Build.PlacingRequest")
-		defer span.End()
-
-		cVer, err := pver.Parse(cp.AppVersion)
-		if err != nil {
-			return nil, nil, kerr.BadRequest("invalid AppVersion", "invalid param")
-		}
-
-		in := &opapi.PlacingRequest{
-			Prefetch:      72,
-			Scope:         cp.AppID,
-			PosCodes:      strings.Split(posCodes, ","),
-			Platform:      cp.Platform,
-			ClientVersion: int64(cVer),
-			UserData: &opapi.UserData{
-				UserId:    cp.UserID,
-				DeviceId:  cp.EID,
-				UtcOffset: int32(cp.UtcOffset),
-				Properties: map[string]string{
-					"language":  cp.Language,
-					"locale":    cp.Locale,
-					"vipstatus": ctx.Form().Get("vipStatus"),
-				},
-			},
-		}
-
-		if isNewUser := ctx.Form().Get("isNewUser"); isNewUser != "" {
-			b, err := strconv.ParseBool(isNewUser)
-			if err == nil {
-				in.UserData.IsNewUser = wrapperspb.Bool(b)
-				in.UserData.Properties["fornewuser"] = isNewUser
-			}
-		}
-		if in.UserData.IsNewUser == nil {
-			v := domain.IsNewUser(cp, ctx.Request())
-			in.UserData.IsNewUser = wrapperspb.Bool(v)
-			in.UserData.Properties["fornewuser"] = "0"
-			if v {
-				in.UserData.Properties["fornewuser"] = "1"
-			}
-		}
-		o.rewriteForPreview(ctx, in)
-		var langMatcher language.Matcher
-		func() {
-			_, span := tracer.Start(ctx3, "PullByCodes.Build.PlacingRequest.NewLanguageMatcher")
-			defer span.End()
-			langMatcher, err = fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
-		}()
-		if err != nil {
-			return nil, nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
-		}
-		return in, langMatcher, nil
-	}()
-	if err2 != nil {
-		return nil, kerr.BadRequest(err2.Error(), err2.Error())
+	cVer, err := pver.Parse(cp.AppVersion)
+	if err != nil {
+		return nil, kerr.BadRequest("invalid AppVersion", "invalid param")
 	}
 
-	res, err := o.OperationalPositionsClient.Placing(ctx2, in)
+	in := &opapi.PlacingRequest{
+		Prefetch:      72,
+		Scope:         cp.AppID,
+		PosCodes:      strings.Split(posCodes, ","),
+		Platform:      cp.Platform,
+		ClientVersion: int64(cVer),
+		UserData: &opapi.UserData{
+			UserId:    cp.UserID,
+			DeviceId:  cp.EID,
+			UtcOffset: int32(cp.UtcOffset),
+			Properties: map[string]string{
+				"language":  cp.Language,
+				"locale":    cp.Locale,
+				"vipstatus": ctx.Form().Get("vipStatus"),
+			},
+		},
+	}
+
+	v := domain.IsNewUser(cp, ctx.Request())
+	in.UserData.IsNewUser = wrapperspb.Bool(v)
+	in.UserData.Properties["fornewuser"] = "0"
+	if v {
+		in.UserData.Properties["fornewuser"] = "1"
+	}
+	o.rewriteForPreview(ctx, in)
+	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
+	if err != nil {
+		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
+	}
+
+	res, err := o.OperationalPositionsClient.Placing(ctx, in)
 	if err != nil {
 		return nil, kerr.InternalServer(err.Error(), "call service failed")
 	}
 
-	ret, err := o.Parser.Parse(ctx2, langMatcher, res.Payload)
+	ret, err := o.Parser.Parse(ctx, langMatcher, res.Payload)
 	if err != nil {
 		return nil, kerr.InternalServer(err.Error(), "parse content failed")
 	}

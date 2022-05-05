@@ -5,6 +5,8 @@ resources:
   - ../../base
   - ingress.yaml
   - configmap.yaml
+  - hpa.yaml
+  - svc.yaml
 
 patches:
   - path: deploy-patch.yaml
