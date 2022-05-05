@@ -26,7 +26,7 @@ func IsNewUser(cp *cparam.Params, r *http.Request) bool {
 }
 
 func newUserDependOnInitTimestamp(initTime, diffDay int64) bool {
-	return initTime+diffDay*24*3600 < time.Now().Unix()
+	return initTime+diffDay*24*3600 > time.Now().Unix()
 }
 
 // 以自然日计算天数差
