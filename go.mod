@@ -9,7 +9,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
-	github.com/pinguo-icc/go-base/v2 v2.5.4
+	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220419035612-93ad16c653c9
@@ -61,7 +61,7 @@ require (
 	github.com/xdg-go/scram v1.1.0 // indirect
 	github.com/xdg-go/stringprep v1.0.2 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
-	go.mongodb.org/mongo-driver v1.8.3 // indirect
+	go.mongodb.org/mongo-driver v1.8.4 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.4.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.4.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.4.1 // indirect

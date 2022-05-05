@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	v1 "github.com/pinguo-icc/Camera360/internal/application/v1"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	pgHandler "github.com/pinguo-icc/go-base/v2/handler"
 )
 
 type Context = khttp.Context
@@ -26,7 +27,7 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
+		v1.GET("/operational-positions", H(rd.OPos.PullByCodes), pgHandler.CacheEtag())
 		v1.GET("/json-config-show", H(rd.OpBasic.Show))
 	}
 
