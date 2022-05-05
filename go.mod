@@ -8,7 +8,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
-	github.com/pinguo-icc/go-base/v2 v2.5.7
+	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5
