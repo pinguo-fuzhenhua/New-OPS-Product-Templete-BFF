@@ -25,9 +25,16 @@ type RouterDefines struct {
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	var H = server.HandlerFunc
 
+	var cacheEtag = pgHandler.CacheEtag(pgHandler.CacheEtagCalculator(func(b []byte) string {
+		// use weak ETag
+		// https://github.com/kubernetes/ingress-nginx/issues/1390
+		s := pgHandler.EtagCalculator(b)
+		return "W/\"" + s + "\""
+	}))
+
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/operational-positions", H(rd.OPos.PullByCodes), pgHandler.CacheEtag())
+		v1.GET("/operational-positions", H(rd.OPos.PullByCodes), cacheEtag)
 		v1.GET("/json-config-show", H(rd.OpBasic.Show))
 	}
 
