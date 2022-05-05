@@ -32,9 +32,11 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 		return "W/\"" + s + "\""
 	}))
 
+	_ = cacheEtag // TODO
+
 	v1 := r.Group("/v1")
 	{
-		v1.GET("/operational-positions", H(rd.OPos.PullByCodes), cacheEtag)
+		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
 		v1.GET("/json-config-show", H(rd.OpBasic.Show))
 	}
 
