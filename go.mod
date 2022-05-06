@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220315030210-f68702a8c2b3
 	github.com/go-kratos/kratos/v2 v2.2.0
+	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1
@@ -13,6 +14,7 @@ require (
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4
+	github.com/pinguo-icc/operations-data-env-svc v0.0.1
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
 	go.opentelemetry.io/otel v1.4.1
 	go.opentelemetry.io/otel/trace v1.4.1
@@ -34,7 +36,6 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/glog v1.0.0 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect

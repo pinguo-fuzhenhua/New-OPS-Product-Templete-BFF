@@ -17,6 +17,7 @@ func PathParam(ctx Context, name string) (val string, ok bool) {
 }
 
 type RouterDefines struct {
+	DataEnv *v1.DataEnv
 	OPos    *v1.OperationalPos
 	OpBasic *v1.JsonConfig
 }
@@ -37,5 +38,10 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	{
 		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
 		v1.GET("/json-config-show", H(rd.OpBasic.Show))
+	}
+
+	{
+		// 数据环境
+		v1.GET("/env", H(rd.DataEnv.ListEnv))
 	}
 }

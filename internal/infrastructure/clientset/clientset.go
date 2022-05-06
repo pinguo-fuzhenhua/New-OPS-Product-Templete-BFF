@@ -2,21 +2,19 @@ package clientset
 
 import (
 	"context"
-	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
-	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
-	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/discovery"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
+	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
+	dataEnvApi "github.com/pinguo-icc/operations-data-env-svc/api"
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
@@ -28,6 +26,7 @@ type ClientSet struct {
 	oppapi.OperationalPositionsClient
 	opmapi.CategoryServiceClient
 	opmapi.MaterialServiceClient
+	dataEnvApi.OperationsDataEnvClient
 	opbasic.OperationalBasicClient
 }
 
@@ -39,7 +38,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		connInfo{addr: c.FieldDef},
 		connInfo{addr: c.OperationalPos, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 		connInfo{addr: c.Material},
-		connInfo{addr: c.OperationalBasicSvcAddr},
+		connInfo{addr: c.DataEnv, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -56,6 +55,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		OperationalPositionsClient: oppapi.NewOperationalPositionsClient(conns[1]),
 		CategoryServiceClient:      opmapi.NewCategoryServiceClient(conns[2]),
 		MaterialServiceClient:      opmapi.NewMaterialServiceClient(conns[2]),
+		OperationsDataEnvClient:    dataEnvApi.NewOperationsDataEnvClient(conns[3]),
 		OperationalBasicClient:     opbasic.NewOperationalBasicClient(conns[3]),
 	}
 
@@ -108,58 +108,6 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			return nil, err
 		}
 		r[i] = conn
-	}
-
-	return r, nil
-}
-
-// newConnectionWithDNSDiscover 临时解决方案,需要服务发现
-func newConnectionWithDNSDiscover(logger log.Logger, traceProvider trace.TracerProvider, connData ...connInfo) ([]discovery.CustomGRPCConn, error) {
-	r := make([]discovery.CustomGRPCConn, len(connData))
-	// https://github.com/grpc/grpc-proto/blob/54713b1e8bc6ed2d4f25fb4dff527842150b91b2/grpc/service_config/service_config.proto#L247
-	// "LoadBalancingPolicy":"` + wrr.Name + `",
-	// "HealthCheckConfig": {"ServiceName": "grpc.health.v1.Health"} //健康检测不过
-	retryPolicy := `{
-	"LoadBalancingPolicy":"round_robin",
-	"MethodConfig": [{
-		"Name":[{"Service":""}],
-		"RetryPolicy": {
-			"MaxAttempts": 3,
-			"InitialBackoff": ".01s",
-			"MaxBackoff": ".01s", 
-			"BackoffMultiplier": 1.0,
-			"RetryableStatusCodes": [ "UNAVAILABLE" ]
-		}
-	}]
-}`
-
-	for i := range connData {
-		dialOpts := []grpc.DialOption{
-			grpc.WithDefaultServiceConfig(retryPolicy),
-			grpc.WithBackoffMaxDelay(time.Second),
-		}
-		dialOpts = append(dialOpts, connData[i].dialOpts...)
-		customConn := discovery.NewCustomConn(log.NewHelper(logger))
-		clientOpts := []kgrpc.ClientOption{
-			// 使用新的服务发现
-			// kgrpc.WithEndpoint(connData[i].addr),
-			kgrpc.WithEndpoint(strings.Replace(connData[i].addr, "dns:", "discovery:", 1)),
-			kgrpc.WithDiscovery(discovery.NewDNSDiscovery(log.NewHelper(logger), func(instances []*registry.ServiceInstance) {
-				customConn.Notify(instances)
-			})),
-			kgrpc.WithOptions(dialOpts...),
-			kgrpc.WithMiddleware(
-				recovery.Recovery(recovery.WithLogger(logger)),
-				tracing.Client(tracing.WithTracerProvider(traceProvider)),
-				logging.Client(logger),
-			),
-			kgrpc.WithLogger(logger),
-		}
-		clientOpts = append(clientOpts, connData[i].clientOpts...)
-
-		customConn.WithKGRPCClientOption(clientOpts...)
-		customConn.Connect(context.TODO())
-		r[i] = customConn
 	}
 
 	return r, nil

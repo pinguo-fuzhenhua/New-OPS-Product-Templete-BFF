@@ -13,6 +13,7 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -54,6 +55,7 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 		khttp.Filter(
 			traceFilter(tracerProvider),
 			cparam.Filter(),
+			denv.HTTPFilter,
 		),
 	}
 
