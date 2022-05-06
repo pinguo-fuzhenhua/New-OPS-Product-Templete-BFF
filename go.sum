@@ -219,8 +219,9 @@ github.com/go-kratos/kratos/contrib/config/apollo/v2 v2.0.0-20220309025117-43870
 github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20211101094857-ce8ed35c1d05/go.mod h1:1/F61YOalUbFdw7hmGpTSe83RJ1Muf33Pyx5BdWb9Mo=
 github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220107141547-76ab0baa561f/go.mod h1:fp0x9wR+smoFIl/WdC1ZvIoTG/cjCncsoWdiMg11L0I=
 github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220218005927-cde962a6c161/go.mod h1:VPuHmP4A4B+L2U4pl12PVB7uuAk/eqMFsguNw/RIYzU=
-github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220225041641-2ee4e5f37aaa h1:f6HniS+jr0Rxt3hg0HF/ZWYMv5ER+bNroOpUDxNRLaE=
 github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220225041641-2ee4e5f37aaa/go.mod h1:rxsq2k/IDKR7nCHXadbFy7msTm8kesnKxKkjLtV94H8=
+github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220315030210-f68702a8c2b3 h1:ta39NvLJ+4lB00GJ+cdwMjFoDQxBRyscDJAUUReAjZc=
+github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220315030210-f68702a8c2b3/go.mod h1:rxsq2k/IDKR7nCHXadbFy7msTm8kesnKxKkjLtV94H8=
 github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20220309025117-4387085047b9/go.mod h1:PwsSRS6KrgfeJ0Xdm1Q23ZneOqLGAR8mlRD1oJ0htME=
 github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20220309025117-4387085047b9/go.mod h1:UB1G3wVn0oR/viZXokBAopwHMDn3AuO11t2oRqa8zzY=
 github.com/go-kratos/kratos/contrib/registry/discovery/v2 v2.0.0-20220309025117-4387085047b9/go.mod h1:UY5VtXPCTZRUIaXojiCohlHIW3UMKDemMzFGVo0XvOc=
@@ -641,8 +642,8 @@ github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi
 github.com/pierrec/lz4 v2.6.0+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pinguo-icc/field-definitions v0.0.0-20211018025954-2ab64f58c0e4/go.mod h1:th1o3VUTMFx5L543daGdeoL1FW571KKZMrkCrajzUlw=
 github.com/pinguo-icc/field-definitions v0.0.0-20220124112348-e08647bfb8b0/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
-github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68 h1:eX+sbzFZOXHmwB81VmRqMfZFzJ95GKCTz3D2xef0SVM=
-github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
+github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1 h1:Z8Pi+A5ipdwwldzhJtTvC/l4BrWWYj9mjA9I0yFQP4Q=
+github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1/go.mod h1:75wn+2fUoXbmGm91uWwiReTqSG5z/GjhTHeApECc6HM=
 github.com/pinguo-icc/go-base/v2 v2.5.3/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
 github.com/pinguo-icc/go-base/v2 v2.5.4/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
 github.com/pinguo-icc/go-base/v2 v2.5.7/go.mod h1:UoINNN/ms/OSbeOMI6MGbaPbsSz5d/rIqiFvtM4+8As=

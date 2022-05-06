@@ -3,12 +3,12 @@ module github.com/pinguo-icc/Camera360
 go 1.17
 
 require (
-	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220225041641-2ee4e5f37aaa
+	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20220315030210-f68702a8c2b3
 	github.com/go-kratos/kratos/v2 v2.2.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/pinguo-icc/field-definitions v0.0.0-20220126095815-d64d59488c68
+	github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1
 	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
