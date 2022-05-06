@@ -646,6 +646,7 @@ github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1 h1:Z8
 github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1/go.mod h1:75wn+2fUoXbmGm91uWwiReTqSG5z/GjhTHeApECc6HM=
 github.com/pinguo-icc/go-base/v2 v2.5.3/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
 github.com/pinguo-icc/go-base/v2 v2.5.4/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
+github.com/pinguo-icc/go-base/v2 v2.5.7/go.mod h1:UoINNN/ms/OSbeOMI6MGbaPbsSz5d/rIqiFvtM4+8As=
 github.com/pinguo-icc/go-base/v2 v2.5.9 h1:s0uvYPv5fcmRvoqq0VOAPxPUnNDXlxovluOE1b1TBNM=
 github.com/pinguo-icc/go-base/v2 v2.5.9/go.mod h1:UoINNN/ms/OSbeOMI6MGbaPbsSz5d/rIqiFvtM4+8As=
 github.com/pinguo-icc/go-lib/v2 v2.0.1/go.mod h1:66+3RQ2QJoXGav4hsJjILWw7UGpTGPuVZPlH8S4sLiU=
@@ -658,8 +659,8 @@ github.com/pinguo-icc/kratos-library/v2 v2.1.7/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/
 github.com/pinguo-icc/kratos-library/v2 v2.1.8 h1:pu1v99Y2xXADB+Epo3QI3Y63hGbZ9MPu1OGZuSR68CQ=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
-github.com/pinguo-icc/operational-basic-svc v0.0.0-20220419035612-93ad16c653c9 h1:8jCMKea62T+v3yqwZ8moUNlBolQjd9zl1ljmsuqNkoM=
-github.com/pinguo-icc/operational-basic-svc v0.0.0-20220419035612-93ad16c653c9/go.mod h1:GGMJPOGKuzC7PX+znAD7Ai3WGXa0Lilq8RvNrJZPKHA=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5 h1:+SHGem68iUlW72aPNjZbb973ndYGxjc4xTfY3/qDvyU=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5/go.mod h1:yRNFTplvG5+OyPJQiPvBsgSXq7/E/juxq614PHZQ3mY=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4 h1:R8fVIQg6oDhMUiRoZ0LXVdlOBrKwtIg+rvD9IsQ8+jk=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4/go.mod h1:xRwg4tfw7HX6/kP85hhKPcSUNApuag+U+fSW2HVOtdo=
 github.com/pinguo-icc/operations-data-env-svc v0.0.1 h1:pA/h5lANeBPVNMOae3mmTtEKtP7fcbCPY946VnFy5EU=

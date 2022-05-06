@@ -12,7 +12,7 @@ require (
 	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
-	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220419035612-93ad16c653c9
+	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4
 	github.com/pinguo-icc/operations-data-env-svc v0.0.1
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20211229065539-fe59a39e04d4
