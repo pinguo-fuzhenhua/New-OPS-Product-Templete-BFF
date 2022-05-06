@@ -17,8 +17,8 @@ func PathParam(ctx Context, name string) (val string, ok bool) {
 }
 
 type RouterDefines struct {
-	DataEnv *v1.DataEnv
 	OPos    *v1.OperationalPos
+	DataEnv *v1.DataEnv
 	OpBasic *v1.JsonConfig
 }
 
