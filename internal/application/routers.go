@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	v1 "github.com/pinguo-icc/Camera360/internal/application/v1"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	pgHandler "github.com/pinguo-icc/go-base/v2/handler"
 )
 
 type Context = khttp.Context
@@ -23,6 +24,15 @@ type RouterDefines struct {
 
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	var H = server.HandlerFunc
+
+	var cacheEtag = pgHandler.CacheEtag(pgHandler.CacheEtagCalculator(func(b []byte) string {
+		// use weak ETag
+		// https://github.com/kubernetes/ingress-nginx/issues/1390
+		s := pgHandler.EtagCalculator(b)
+		return "W/\"" + s + "\""
+	}))
+
+	_ = cacheEtag // TODO
 
 	v1 := r.Group("/v1")
 	{
