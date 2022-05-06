@@ -11,14 +11,13 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 )
 
-type SetCallback func(serviceName string) Callback
 type Callback func(instances []*registry.ServiceInstance)
 
-func NewDNSDiscovery(log *log.Helper, fn SetCallback) registry.Discovery {
+func NewDNSDiscovery(log *log.Helper, callback Callback) registry.Discovery {
 	return &DNSDiscovery{
 		services: map[string]registry.Watcher{},
 		log:      log,
-		fn:       fn,
+		callback: callback,
 	}
 }
 
@@ -27,11 +26,11 @@ func NewDNSDiscovery(log *log.Helper, fn SetCallback) registry.Discovery {
 type DNSDiscovery struct {
 	services map[string]registry.Watcher
 	log      *log.Helper
-	fn       SetCallback
+	callback Callback
 }
 
 func (s *DNSDiscovery) GetService(ctx context.Context, serviceName string) ([]*registry.ServiceInstance, error) {
-	return s.services[serviceName].(*DNSWatcher).latest, nil
+	return s.services[serviceName].(*DNSWatcher).toArray(), nil
 }
 
 func (s *DNSDiscovery) Watch(ctx context.Context, serviceName string) (registry.Watcher, error) {
@@ -48,12 +47,11 @@ func (s *DNSDiscovery) Watch(ctx context.Context, serviceName string) (registry.
 		return v, nil
 	}
 	dw := &DNSWatcher{
-		name:      serviceName,
-		port:      port,
-		instances: map[string]*registry.ServiceInstance{},
-		changed:   make(chan []*registry.ServiceInstance, 1),
-		log:       s.log,
-		fn:        s.fn(serviceName),
+		name:     serviceName,
+		port:     port,
+		changed:  make(chan struct{}, 1),
+		log:      s.log,
+		callback: s.callback,
 	}
 	go dw.watch()
 	s.services[serviceName] = dw
@@ -61,41 +59,57 @@ func (s *DNSDiscovery) Watch(ctx context.Context, serviceName string) (registry.
 }
 
 type DNSWatcher struct {
-	port      string
-	name      string
-	instances map[string]*registry.ServiceInstance
-	changed   chan []*registry.ServiceInstance
-	latest    []*registry.ServiceInstance
-	log       *log.Helper
-	fn        Callback
+	port     string
+	name     string
+	changed  chan struct{}
+	latest   map[string]*registry.ServiceInstance
+	log      *log.Helper
+	callback Callback
 }
 
 func (m *DNSWatcher) Next() ([]*registry.ServiceInstance, error) {
-	r := <-m.changed
-	if m.fn != nil {
-		go m.fn(r)
+	if m.latest == nil {
+		time.Sleep(time.Second)
+	} else {
+		<-m.changed
 	}
-	return r, nil
+	if m.callback != nil {
+		go m.callback(m.toArray())
+	}
+	return m.toArray(), nil
 }
+
+func (m *DNSWatcher) toArray() []*registry.ServiceInstance {
+	ins := make([]*registry.ServiceInstance, len(m.latest))
+	idx := 0
+	for _, v := range m.latest {
+		ins[idx] = v
+		idx++
+	}
+	return ins
+}
+
 func (m *DNSWatcher) watch() {
 	for {
-		m.watch1()
+		// 每5重新解析dns
+		m.lookup()
 		time.Sleep(time.Second * 5)
 	}
 }
-func (m *DNSWatcher) watch1() {
-	a, err := net.LookupHost(m.name)
-	if err != nil {
-		m.log.Warnf("resolve host failed, hostname=%s,message=%s", m.name, err.Error())
-	}
+func (m *DNSWatcher) lookup() {
 	_, srvs, err := net.LookupSRV("grpclb", "tcp", m.name)
 	if err != nil {
-		// m.log.Warnf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
+		// m.log.Debugf("resolve grpclb failed, hostname=%s,message=%s", m.name, err.Error())
 		srvs = make([]*net.SRV, 0)
 	}
 
+	// 没有找到grpclb SRV记录再解析A记录
 	if len(srvs) == 0 {
-		for _, v := range a {
+		addrs, err := net.LookupHost(m.name)
+		if err != nil {
+			m.log.Debugf("resolve host failed, hostname=%s,message=%s", m.name, err.Error())
+		}
+		for _, v := range addrs {
 			if v == "::1" {
 				continue
 			}
@@ -106,46 +120,42 @@ func (m *DNSWatcher) watch1() {
 		}
 	}
 
-	newIns := make(map[string]struct{})
-	hasChange := false
-
+	hasChanged := false
+	latest := make(map[string]*registry.ServiceInstance, 0)
 	for _, v := range srvs {
-		a, err := net.LookupHost(v.Target)
+		addrs, err := net.LookupHost(v.Target)
 		if err != nil {
-			// m.log.Warnf("resolve host failed, hostname=%s,message=%s", v.Target, err.Error())
+			m.log.Debugf("resolve host failed, hostname=%s,message=%s", v.Target, err.Error())
 			continue
 		}
-		for _, addr := range a {
+		for _, addr := range addrs {
 			id := fmt.Sprintf("%s:%s", addr, m.port)
-			newIns[id] = struct{}{}
-			if _, ok := m.instances[id]; ok {
+			if v, ok := m.latest[id]; ok {
+				latest[id] = v
+			} else {
+				hasChanged = true
+				latest[id] = &registry.ServiceInstance{
+					ID:        id,
+					Name:      m.name,
+					Version:   "v1",
+					Metadata:  map[string]string{},
+					Endpoints: []string{fmt.Sprintf("grpc://%s:%s?isSecure=false", addr, m.port)},
+				}
+			}
+		}
+	}
+	if !hasChanged {
+		for n, _ := range m.latest {
+			if _, ok := latest[n]; ok {
 				continue
 			}
-
-			address := fmt.Sprintf("grpc://%s:%s?isSecure=false", addr, m.port)
-			m.instances[id] = &registry.ServiceInstance{
-				ID:        id,
-				Name:      m.name,
-				Version:   "v1",
-				Metadata:  map[string]string{},
-				Endpoints: []string{address},
-			}
-			hasChange = true
+			hasChanged = true
 			break
 		}
 	}
-	list := make([]*registry.ServiceInstance, 0)
-	for n, ins := range m.instances {
-		if _, ok := newIns[n]; !ok {
-			delete(m.instances, n)
-			hasChange = true
-			continue
-		}
-		list = append(list, ins)
-	}
-	m.latest = list
-	if hasChange {
-		m.changed <- list
+	if hasChanged {
+		m.latest = latest
+		m.changed <- struct{}{}
 	}
 }
 

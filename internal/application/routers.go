@@ -1,11 +1,11 @@
 package application
 
 import (
+	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/mux"
 	v1 "github.com/pinguo-icc/Camera360/internal/application/v1"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
-
-	khttp "github.com/go-kratos/kratos/v2/transport/http"
+	pgHandler "github.com/pinguo-icc/go-base/v2/handler"
 )
 
 type Context = khttp.Context
@@ -17,16 +17,27 @@ func PathParam(ctx Context, name string) (val string, ok bool) {
 }
 
 type RouterDefines struct {
-	OPos *v1.OperationalPos
 	DataEnv *v1.DataEnv
+	OPos    *v1.OperationalPos
+	OpBasic *v1.JsonConfig
 }
 
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	var H = server.HandlerFunc
 
+	var cacheEtag = pgHandler.CacheEtag(pgHandler.CacheEtagCalculator(func(b []byte) string {
+		// use weak ETag
+		// https://github.com/kubernetes/ingress-nginx/issues/1390
+		s := pgHandler.EtagCalculator(b)
+		return "W/\"" + s + "\""
+	}))
+
+	_ = cacheEtag // TODO
+
 	v1 := r.Group("/v1")
 	{
 		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
+		v1.GET("/json-config-show", H(rd.OpBasic.Show))
 	}
 
 	{

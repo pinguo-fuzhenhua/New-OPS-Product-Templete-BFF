@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"hash/fnv"
 	"strconv"
 
 	fdapi "github.com/pinguo-icc/field-definitions/api"
@@ -34,6 +35,7 @@ type Activity struct {
 	ID        string
 	PID       string
 	RootID    string
+	TrackID   string
 	FieldCode string
 	Name      string
 	Period    period
@@ -64,6 +66,7 @@ func (a *Activity) MarshalJSON() ([]byte, error) {
 		a.writeBaseKV(buf, "id", a.ID)
 		a.writeBaseKV(buf, "pid", a.PID)
 		a.writeBaseKV(buf, "rootId", a.RootID)
+		a.writeBaseKV(buf, "trackId", a.TrackID)
 		a.writeBaseKV(buf, "fieldCode", a.FieldCode)
 		a.writeBaseKV(buf, "name", a.Name)
 
@@ -131,17 +134,7 @@ func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *trace.Factory) *Acti
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
-	ctx, tracer, span := ap.trFactory.Debug(ctx, "ActivitiesParser.Parse")
-	defer span.End()
-
-	var fps map[string]*fdpkg.Parser
-	var err error
-	func() {
-		ctx2, span := tracer.Start(ctx, "ActivitiesParser.Parse.getFieldParser")
-		defer span.End()
-		fps, err = ap.getFieldParser(ctx2, data)
-	}()
-
+	fps, err := ap.getFieldParser(ctx, data)
 	if err != nil {
 		return nil, err
 	}
@@ -169,14 +162,12 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 		}
 
 		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parse activity failed, id=%s %w", ac.Id, err)
 		}
 		return tmp, nil
 	}
-	res := make(map[string][]*ActivityPlan, len(data))
-	var wgError error
 
-	spanIndex := 0
+	res := make(map[string][]*ActivityPlan, len(data))
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
 		for i, plan := range pPlan.Plans {
@@ -190,25 +181,17 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				Activities: make([]*Activity, len(plan.Activities)),
 			}
 			for j, ac := range plan.Activities {
-				func(planId, acId int, formatAc *oppapi.PlacingResponse_Activity) {
-					_, span := tracer.Start(ctx, fmt.Sprintf("ActivitiesParser.Parse.formatActivity.%v", spanIndex))
-					spanIndex++
-					defer span.End()
-
-					tmp, err := formatActivity(formatAc)
-					if err != nil {
-						wgError = err
-					} else {
-						outPlans[planId].Activities[acId] = tmp
-					}
-				}(i, j, ac)
+				tmp, err := formatActivity(ac)
+				if err != nil {
+					return nil, err
+				} else {
+					tmp.TrackID = ap.generateTrackID(plan.Id, plan.ContentId, tmp.ID)
+					outPlans[i].Activities[j] = tmp
+				}
 			}
 		}
 
 		res[posCode] = outPlans
-	}
-	if wgError != nil {
-		return nil, wgError
 	}
 
 	return res, nil
@@ -235,4 +218,11 @@ func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]
 	}
 
 	return ap.pFac.MGet(ctx, fDefIDs)
+}
+
+func (ap *ActivitiesParser) generateTrackID(planID, contentID, activityID string) string {
+	h := fnv.New64a()
+	h.Write([]byte(planID + contentID + activityID))
+	d := int64(h.Sum64())
+	return strconv.FormatInt(d, 10)
 }
