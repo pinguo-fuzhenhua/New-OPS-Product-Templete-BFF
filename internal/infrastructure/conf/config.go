@@ -38,9 +38,9 @@ type App struct {
 }
 
 type Clientset struct {
-	FieldDef       string
-	OperationalPos string
-	Material       string
-	DataEnv        string
+	FieldDef                string
+	OperationalPos          string
+	Material                string
+	DataEnv                 string
 	OperationalBasicSvcAddr string
 }
