@@ -664,7 +664,6 @@ github.com/pinguo-icc/kratos-library/v2 v2.1.7/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/
 github.com/pinguo-icc/kratos-library/v2 v2.1.8 h1:pu1v99Y2xXADB+Epo3QI3Y63hGbZ9MPu1OGZuSR68CQ=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
-<<<<<<< HEAD
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220323014015-b62a0214efa5/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220421075349-7cedd9bb3e8f/go.mod h1:ivfSitMtEldxhDEMOq/CFWYXD9VuiHFcPZMFUdDLv3c=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220509073703-bf750fc989e7 h1:vAJm3p3WefUJBJ3LjMSuRMf44wY2bGXlYu5DjGqYblI=
@@ -672,12 +671,6 @@ github.com/pinguo-icc/operational-basic-svc v0.0.0-20220509073703-bf750fc989e7/g
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220517081046-f0bce17829b4 h1:M4drLfAh3T2m1s8m1S/8k3hpch+txzQDlckZTrte8uQ=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220517081046-f0bce17829b4/go.mod h1:75+rsavSu/TgKZdIG5nVQx13vUR575wjhNA7Y6k4aFk=
 github.com/pinguo-icc/operations-data-env-svc v0.0.0-20220510020444-9edb0996dc29/go.mod h1:oLSwLZW0rVcEhs/oiVN4/VG2IlNnfhFkq3sIEQJNVGA=
-=======
-github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5 h1:+SHGem68iUlW72aPNjZbb973ndYGxjc4xTfY3/qDvyU=
-github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5/go.mod h1:yRNFTplvG5+OyPJQiPvBsgSXq7/E/juxq614PHZQ3mY=
-github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4 h1:R8fVIQg6oDhMUiRoZ0LXVdlOBrKwtIg+rvD9IsQ8+jk=
-github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4/go.mod h1:xRwg4tfw7HX6/kP85hhKPcSUNApuag+U+fSW2HVOtdo=
->>>>>>> ad8536911d77e6c95fe895c44208b20776dd7743
 github.com/pinguo-icc/operations-data-env-svc v0.0.1 h1:pA/h5lANeBPVNMOae3mmTtEKtP7fcbCPY946VnFy5EU=
 github.com/pinguo-icc/operations-data-env-svc v0.0.1/go.mod h1:oLSwLZW0rVcEhs/oiVN4/VG2IlNnfhFkq3sIEQJNVGA=
 github.com/pinguo-icc/operations-material-svc v0.0.0-20220506062329-901a5474a15f h1:UocF3Ily1hnH95SF0eI8sBU44ZiJ+61lR7AoQ27DxC0=

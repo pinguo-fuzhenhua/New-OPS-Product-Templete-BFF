@@ -57,11 +57,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		OperationalPositionsClient: oppapi.NewOperationalPositionsClient(conns[1]),
 		CategoryServiceClient:      opmapi.NewCategoryServiceClient(conns[2]),
 		MaterialServiceClient:      opmapi.NewMaterialServiceClient(conns[2]),
-<<<<<<< HEAD
-		OperationsDataEnvClient:	dataEnvApi.NewOperationsDataEnvClient(conns[3]),
-=======
 		OperationsDataEnvClient:    dataEnvApi.NewOperationsDataEnvClient(conns[3]),
->>>>>>> ad8536911d77e6c95fe895c44208b20776dd7743
 		OperationalBasicClient:     opbasic.NewOperationalBasicClient(conns[4]),
 	}
 
