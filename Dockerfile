@@ -3,7 +3,7 @@ COPY . /app
 WORKDIR /app
 ENV GOPROXY=https://goproxy.cn
 ENV CGO_ENABLED=0
-RUN /bin/sh -c 'go mod tidy && make build'
+RUN /bin/sh -c 'go mod tidy -compat=1.17 && make build'
 
 # 运维使用的分割线
 #---DoNotDelete
