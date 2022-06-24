@@ -201,7 +201,7 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 
 	}
 
-	ap.logger.Info("logCodeTrackId", logCodeTrackId)
+	ap.logger.WithContext(ctx).Info("logCodeTrackId", logCodeTrackId)
 
 	return res, nil
 }
