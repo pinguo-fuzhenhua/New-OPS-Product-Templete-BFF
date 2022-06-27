@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/log"
 	"hash/fnv"
 	"strconv"
 
@@ -127,10 +128,11 @@ func (a *Activity) writeEles(buf *bytes.Buffer, data []fdpkg.E) error {
 type ActivitiesParser struct {
 	pFac      *fdpkg.ParserFactory
 	trFactory *trace.Factory
+	logger    *log.Helper
 }
 
-func NewActivitiesParser(p *fdpkg.ParserFactory, trFactory *trace.Factory) *ActivitiesParser {
-	return &ActivitiesParser{pFac: p, trFactory: trFactory}
+func NewActivitiesParser(logger log.Logger, p *fdpkg.ParserFactory, trFactory *trace.Factory) *ActivitiesParser {
+	return &ActivitiesParser{logger: log.NewHelper(logger), pFac: p, trFactory: trFactory}
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
@@ -168,8 +170,10 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 	}
 
 	res := make(map[string][]*ActivityPlan, len(data))
+	logCodeTrackId := ""
 	for posCode, pPlan := range data {
 		outPlans := make([]*ActivityPlan, len(pPlan.Plans))
+		trackIdStr := ""
 		for i, plan := range pPlan.Plans {
 			outPlans[i] = &ActivityPlan{
 				ID:   plan.Id,
@@ -187,12 +191,17 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 				} else {
 					tmp.TrackID = ap.generateTrackID(plan.Id, plan.ContentId, tmp.ID)
 					outPlans[i].Activities[j] = tmp
+					trackIdStr += tmp.TrackID + ","
 				}
 			}
 		}
 
 		res[posCode] = outPlans
+		logCodeTrackId += "postCode:" + posCode + " trackIds:" + trackIdStr
+
 	}
+
+	ap.logger.WithContext(ctx).Info("logCodeTrackId", logCodeTrackId)
 
 	return res, nil
 }
