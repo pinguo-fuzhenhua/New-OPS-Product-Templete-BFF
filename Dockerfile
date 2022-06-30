@@ -1,7 +1,7 @@
 FROM mirror-pub.camera360.com/base/golang-builder:1.17.0 as builder
 COPY . /app
 WORKDIR /app
-ENV GOPROXY=https://goproxy.cn
+# ENV GOPROXY=https://goproxy.cn
 ENV CGO_ENABLED=0
 RUN /bin/sh -c 'go mod tidy -compat=1.17 && make build'
 
