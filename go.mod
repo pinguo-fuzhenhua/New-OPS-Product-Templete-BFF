@@ -8,11 +8,11 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1
+	github.com/pinguo-icc/field-definitions v0.0.0-20220630073122-1e7f5984f5db
 	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
-	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220426015244-b725706e4cc5
+	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4
 	github.com/pinguo-icc/operations-data-env-svc v0.0.1
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20220506062329-901a5474a15f
@@ -83,4 +83,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-// replace github.com/pinguo-icc/field-definitions => ../field-definitions
+//replace github.com/pinguo-icc/field-definitions => ../field-definitions-svc
+//replace github.com/pinguo-icc/operational-basic-svc => ../operational-basic-svc
