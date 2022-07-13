@@ -17,3 +17,7 @@ qiniu:
     bucket: qa-c360
     url: https://cdn-qa-all.c360dn.com
     isPrivate: false
+log:
+  filePath: /Users/xieweizhi/logs/camera360.log
+  maxSize: 30
+  maxAge: 7

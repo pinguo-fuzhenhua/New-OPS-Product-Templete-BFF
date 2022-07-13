@@ -9,7 +9,7 @@ require (
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pinguo-icc/field-definitions v0.0.0-20220630073122-1e7f5984f5db
-	github.com/pinguo-icc/go-base/v2 v2.5.9
+	github.com/pinguo-icc/go-base/v2 v2.5.13
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.8
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8
@@ -20,7 +20,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.4.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/text v0.3.7
-	google.golang.org/grpc v1.44.0
+	google.golang.org/grpc v1.47.0
 	google.golang.org/protobuf v1.27.1
 )
 
@@ -79,6 +79,7 @@ require (
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	google.golang.org/genproto v0.0.0-20220218161850-94dd64e39d7c // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

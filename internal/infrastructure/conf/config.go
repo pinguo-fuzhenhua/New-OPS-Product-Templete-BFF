@@ -17,6 +17,7 @@ type Bootstrap struct {
 	Clientset *Clientset
 	Qiniu     *qiniu.Config
 	Params    *Params
+	Log       *Log
 }
 
 type Params struct{}
@@ -43,4 +44,10 @@ type Clientset struct {
 	Material                string
 	DataEnv                 string
 	OperationalBasicSvcAddr string
+}
+
+type Log struct {
+	FilePath string
+	MaxSize  int
+	MaxAge   int
 }
