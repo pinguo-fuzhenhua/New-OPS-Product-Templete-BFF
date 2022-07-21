@@ -3,7 +3,6 @@ package v1
 import (
 	"encoding/json"
 	"strings"
-	"time"
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
@@ -33,18 +32,9 @@ func (j *JsonConfig) Show(ctx khttp.Context) (res interface{}, err error) {
 	if err != nil {
 		return nil, err
 	}
-
-	ret := map[string]interface{}{
-		"message":    "",
-		"serverTime": time.Now().Unix(),
-		"status":     200,
-	}
-	var temp interface{}
-	err = json.Unmarshal([]byte(data.Content), &temp)
+	err = json.Unmarshal([]byte(data.Content), &res)
 	if err != nil {
 		return nil, err
 	}
-	ret["data"] = temp
-
-	return ret, nil
+	return res, nil
 }
