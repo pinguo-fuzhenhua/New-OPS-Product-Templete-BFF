@@ -2,11 +2,13 @@ package v1
 
 import (
 	"encoding/json"
+	"strings"
+	"time"
+
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
 	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
-	"strings"
 )
 
 type JsonConfig struct {
@@ -31,9 +33,18 @@ func (j *JsonConfig) Show(ctx khttp.Context) (res interface{}, err error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(data.Content), &res)
+
+	ret := map[string]interface{}{
+		"message":    "",
+		"serverTime": time.Now().Unix(),
+		"status":     200,
+	}
+	var temp interface{}
+	err = json.Unmarshal([]byte(data.Content), &temp)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	ret["data"] = temp
+
+	return ret, nil
 }

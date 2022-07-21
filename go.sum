@@ -643,7 +643,8 @@ github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi
 github.com/pierrec/lz4 v2.6.0+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pinguo-icc/bmallsdk v1.0.27 h1:aXglDkQFB5m0Ug8Dh0hPTGBzDPwv6dfhon9l+rStaC4=
 github.com/pinguo-icc/bmallsdk v1.0.27/go.mod h1:rJj7MzH+lV20O1hJz0qxCTvroF/0mbBVYvAdPjvTR0U=
-github.com/pinguo-icc/field-definitions v0.0.0-20220506053526-eca4500d90e1/go.mod h1:75wn+2fUoXbmGm91uWwiReTqSG5z/GjhTHeApECc6HM=
+github.com/pinguo-icc/field-definitions v0.0.0-20220110094656-42dd7551ac8e/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
+github.com/pinguo-icc/field-definitions v0.0.0-20220124112348-e08647bfb8b0/go.mod h1:b75OtdYUXLnbagVYgH8svhvvDLzaNLW13Dp2rhmjA8s=
 github.com/pinguo-icc/field-definitions v0.0.0-20220630073122-1e7f5984f5db h1:QOh55E4t7oqxxrefs5SymuliThDqekSNHbsxBVRtEkg=
 github.com/pinguo-icc/field-definitions v0.0.0-20220630073122-1e7f5984f5db/go.mod h1:nKPFwKTQ78Klg/059nNGCVLAhwqxr7kLEr5bj8wGi04=
 github.com/pinguo-icc/go-base/v2 v2.5.3/go.mod h1:poTYuTXpvw84rZYb8P/t6vjJFgKMh3XazRRoeG+XFLI=
@@ -657,6 +658,8 @@ github.com/pinguo-icc/kratos-library/v2 v2.1.4/go.mod h1:EUM7jlZMlLltWjUqsCXiUiP
 github.com/pinguo-icc/kratos-library/v2 v2.1.7/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8 h1:pu1v99Y2xXADB+Epo3QI3Y63hGbZ9MPu1OGZuSR68CQ=
 github.com/pinguo-icc/kratos-library/v2 v2.1.8/go.mod h1:Zgrjx97eO+UUwNtk5oiey2/Ls2uSbvOvxYf9/xly410=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220318065322-43891288f066/go.mod h1:bQpVbwAfKOIjPaSMQ62Oe1me/cTJIwBCZcDi+xlWNBY=
+github.com/pinguo-icc/operational-basic-svc v0.0.0-20220421075349-7cedd9bb3e8f/go.mod h1:ivfSitMtEldxhDEMOq/CFWYXD9VuiHFcPZMFUdDLv3c=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8 h1:YIYQufK5fGXM6J1ouhiLvS+5FGNThXt5UPD/Al8bmlA=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8/go.mod h1:yRNFTplvG5+OyPJQiPvBsgSXq7/E/juxq614PHZQ3mY=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4 h1:R8fVIQg6oDhMUiRoZ0LXVdlOBrKwtIg+rvD9IsQ8+jk=
@@ -850,6 +853,7 @@ go.mongodb.org/mongo-driver v1.6.0/go.mod h1:Q4oFMbo1+MSNqICAdYMlC/zSTrwCogR4R8N
 go.mongodb.org/mongo-driver v1.7.1/go.mod h1:Q4oFMbo1+MSNqICAdYMlC/zSTrwCogR4R8NzkI+yfU8=
 go.mongodb.org/mongo-driver v1.7.3/go.mod h1:NqaYOwnXWr5Pm7AOpO5QFxKJ503nbMse/R79oO62zWg=
 go.mongodb.org/mongo-driver v1.8.1/go.mod h1:0sQWfOeY63QTntERDJJ/0SuKK0T1uVSgKCuAROlKEPY=
+go.mongodb.org/mongo-driver v1.8.2/go.mod h1:0sQWfOeY63QTntERDJJ/0SuKK0T1uVSgKCuAROlKEPY=
 go.mongodb.org/mongo-driver v1.8.3/go.mod h1:0sQWfOeY63QTntERDJJ/0SuKK0T1uVSgKCuAROlKEPY=
 go.mongodb.org/mongo-driver v1.8.4 h1:NruvZPPL0PBcRJKmbswoWSrmHeUvzdxA3GCPfD/NEOA=
 go.mongodb.org/mongo-driver v1.8.4/go.mod h1:0sQWfOeY63QTntERDJJ/0SuKK0T1uVSgKCuAROlKEPY=
