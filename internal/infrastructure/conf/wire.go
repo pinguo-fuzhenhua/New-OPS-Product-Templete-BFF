@@ -6,6 +6,6 @@ import (
 )
 
 var ProviderSet = wire.NewSet(
-	wire.FieldsOf(new(*Bootstrap), "App", "Http", "Trace", "Clientset", "Qiniu", "Params", "Log"),
+	wire.FieldsOf(new(*Bootstrap), "App", "Http", "Trace", "Clientset", "Qiniu", "Params", "Recorder"),
 	trace.NewFactory,
 )
