@@ -22,7 +22,7 @@ import (
 
 func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
 	http := bootstrap.Http
-	confLog := bootstrap.Log
+	recorder := bootstrap.Recorder
 	config := bootstrap.Trace
 	tracerProvider := trace.NewTracerProvider(config)
 	confClientset := bootstrap.Clientset
@@ -51,7 +51,7 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		DataEnv: dataEnv,
 		OpBasic: jsonConfig,
 	}
-	httpServer, cleanup2 := server.NewHttpServer(http, confLog, tracerProvider, logger, routerDefines)
+	httpServer, cleanup2 := server.NewHttpServer(http, recorder, tracerProvider, logger, routerDefines)
 	app := newApp(bootstrap, logger, httpServer)
 	return app, func() {
 		cleanup2()

@@ -24,7 +24,7 @@ type Register interface {
 }
 
 // New new a bm server.
-func NewHttpServer(config *conf.HTTP, logCfg *conf.Log, tracerProvider trace.TracerProvider, logger log.Logger, r Register) (*khttp.Server, func()) {
+func NewHttpServer(config *conf.HTTP, logCfg *conf.Recorder, tracerProvider trace.TracerProvider, logger log.Logger, r Register) (*khttp.Server, func()) {
 	loggerWithMethod := log.With(
 		logger,
 		"method",
