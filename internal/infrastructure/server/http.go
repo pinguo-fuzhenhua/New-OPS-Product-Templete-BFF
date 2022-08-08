@@ -11,7 +11,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
 	"github.com/pinguo-icc/go-base/v2/recorder"
@@ -56,7 +55,7 @@ func NewHttpServer(config *conf.HTTP, logCfg *conf.Recorder, tracerProvider trac
 		),
 		khttp.Filter(
 			recorder.HTTPFilter(
-				recorder.IsNewUser(domain.IsNewUser),
+				recorder.IsNewUser(IsNewUser),
 				recorder.FilePath(logCfg.FilePath),
 				recorder.MaxSize(logCfg.MaxSize),
 				recorder.MaxAge(logCfg.MaxAge),
