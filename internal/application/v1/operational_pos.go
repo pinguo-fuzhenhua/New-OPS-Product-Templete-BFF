@@ -9,6 +9,7 @@ import (
 	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
@@ -53,7 +54,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		},
 	}
 
-	v := domain.IsNewUser(cp, ctx.Request())
+	v := server.IsNewUser(cp, ctx.Request())
 	in.UserData.IsNewUser = wrapperspb.Bool(v)
 	in.UserData.Properties["fornewuser"] = "0"
 	if v {
