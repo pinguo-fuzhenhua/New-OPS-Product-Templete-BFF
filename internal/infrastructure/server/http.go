@@ -59,6 +59,7 @@ func NewHttpServer(config *conf.HTTP, logCfg *conf.Recorder, tracerProvider trac
 				recorder.FilePath(logCfg.FilePath),
 				recorder.MaxSize(logCfg.MaxSize),
 				recorder.MaxAge(logCfg.MaxAge),
+				recorder.MaxBackups(logCfg.MaxBackups),
 			), // this filter request in the first place.
 			traceFilter(tracerProvider),
 			cparam.Filter(),
