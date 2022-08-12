@@ -1,11 +1,12 @@
 app:
     env: &appEnv dev
 clientSet:
-    fieldDef: dns:///localhost:9000
+    fieldDef: dns:///localhost:9003
     operationalPos: dns:///localhost:9002
     material: dns:///localhost:9004
     dataEnv: dns:///127.0.0.1:9005
     operationalBasicSvcAddr: dns:///localhost:9000
+    MaterialPos: dns:///localhost:9000
 trace:
     level: debug
     env: *appEnv
