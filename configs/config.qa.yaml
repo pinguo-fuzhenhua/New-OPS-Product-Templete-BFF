@@ -13,5 +13,6 @@ qiniu:
     isPrivate: false
 recorder:
   filePath: /opt/logs/camera360.log
-  maxSize: 30
-  maxAge: 7
+  maxSize: 100
+  maxAge: 1
+  maxBackups: 5
