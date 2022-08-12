@@ -21,3 +21,4 @@ recorder:
   filePath: ./logs/camera360.log
   maxSize: 30
   maxAge: 7
+  maxBackups: 2

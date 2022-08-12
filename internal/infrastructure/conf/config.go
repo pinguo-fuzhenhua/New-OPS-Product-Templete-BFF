@@ -50,5 +50,6 @@ type Recorder struct {
 	FilePath             string
 	MaxSize              int
 	MaxAge               int
+	MaxBackups           int
 	RegexpRecordeRouters []string
 }
