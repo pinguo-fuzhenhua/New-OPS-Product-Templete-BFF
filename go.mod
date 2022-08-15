@@ -8,13 +8,8 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-<<<<<<< HEAD
 	github.com/pinguo-icc/field-definitions v0.0.0-20220812063142-de392acf15af
-	github.com/pinguo-icc/go-base/v2 v2.5.9
-=======
-	github.com/pinguo-icc/field-definitions v0.0.0-20220630073122-1e7f5984f5db
 	github.com/pinguo-icc/go-base/v2 v2.5.16
->>>>>>> qa
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.9
 	github.com/pinguo-icc/material-positions-svc v0.0.0-20220815072448-57decc50e3b7
@@ -26,13 +21,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.7.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/text v0.3.7
-<<<<<<< HEAD
-	google.golang.org/grpc v1.45.0
-	google.golang.org/protobuf v1.28.0
-=======
 	google.golang.org/grpc v1.47.0
-	google.golang.org/protobuf v1.27.1
->>>>>>> qa
+	google.golang.org/protobuf v1.28.0
 )
 
 // require github.com/pinguo-icc/material-positions-svc v0.0.0-20220804022807-e82264e1a7d4
