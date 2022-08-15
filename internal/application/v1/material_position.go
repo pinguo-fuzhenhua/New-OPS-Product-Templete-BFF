@@ -6,8 +6,8 @@ import (
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/Camera360/internal/domain"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	mpsvc "github.com/pinguo-icc/material-positions-svc/api"
 )
@@ -116,7 +116,7 @@ func (m *MaterialPositions) rewriteForUserData(ctx khttp.Context, in *mpsvc.User
 	header := ctx.Header()
 
 	forNewUser := "0"
-	if v := domain.IsNewUser(cp, ctx.Request()); v {
+	if v := server.IsNewUser(cp, ctx.Request()); v {
 		forNewUser = "1"
 	}
 	in.Properties["fornewuser"] = forNewUser
