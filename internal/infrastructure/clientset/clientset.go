@@ -13,6 +13,7 @@ import (
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
+	mpos "github.com/pinguo-icc/material-positions-svc/api"
 	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	dataEnvApi "github.com/pinguo-icc/operations-data-env-svc/api"
@@ -29,6 +30,7 @@ type ClientSet struct {
 	opmapi.MaterialServiceClient
 	dataEnvApi.OperationsDataEnvClient
 	opbasic.OperationalBasicClient
+	mpos.MaterialPositionsClient
 }
 
 // NewClientSet new gRPC Client Set
@@ -41,6 +43,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		connInfo{addr: c.Material},
 		connInfo{addr: c.DataEnv, clientOpts: []kgrpc.ClientOption{kgrpc.WithTimeout(5 * time.Second)}},
 		connInfo{addr: c.OperationalBasicSvcAddr},
+		connInfo{addr: c.MaterialPos},
 	)
 	if err != nil {
 		return nil, nil, err
@@ -59,6 +62,7 @@ func NewClientSet(c *conf.Clientset, logger log.Logger, traceProvider trace.Trac
 		MaterialServiceClient:      opmapi.NewMaterialServiceClient(conns[2]),
 		OperationsDataEnvClient:    dataEnvApi.NewOperationsDataEnvClient(conns[3]),
 		OperationalBasicClient:     opbasic.NewOperationalBasicClient(conns[4]),
+		MaterialPositionsClient:    mpos.NewMaterialPositionsClient(conns[5]),
 	}
 
 	return h, cancelFn, nil
