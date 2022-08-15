@@ -28,6 +28,7 @@ clientSet:
     material: dns:///operations-materials.operation-placing-system:9000
     dataEnv: dns:///operations-data-env.operation-placing-system:9000
     operationalBasicSvcAddr: dns:///operational-basic.operation-placing-system:9000
+    materialPos: dns:///material-positions-v2.operation-placing-system:9000
 params:
 recorder:
   filePath: /opt/logs/camera360.log

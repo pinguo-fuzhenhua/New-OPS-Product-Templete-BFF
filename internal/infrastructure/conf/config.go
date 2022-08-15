@@ -44,6 +44,7 @@ type Clientset struct {
 	Material                string
 	DataEnv                 string
 	OperationalBasicSvcAddr string
+	MaterialPos             string
 }
 
 type Recorder struct {

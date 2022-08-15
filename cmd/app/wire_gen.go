@@ -46,10 +46,15 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	jsonConfig := &v1.JsonConfig{
 		Opbasic: operationalBasicClient,
 	}
+	materialPositionsClient := clientSet.MaterialPositionsClient
+	materialPositions := &v1.MaterialPositions{
+		MP: materialPositionsClient,
+	}
 	routerDefines := &application.RouterDefines{
 		OPos:    operationalPos,
 		DataEnv: dataEnv,
 		OpBasic: jsonConfig,
+		Mpos:    materialPositions,
 	}
 	httpServer, cleanup2 := server.NewHttpServer(http, recorder, tracerProvider, logger, routerDefines)
 	app := newApp(bootstrap, logger, httpServer)
