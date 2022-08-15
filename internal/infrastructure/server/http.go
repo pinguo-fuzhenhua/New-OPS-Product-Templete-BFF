@@ -13,6 +13,7 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
 	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/go-base/v2/recorder"
 	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -22,7 +23,7 @@ type Register interface {
 }
 
 // New new a bm server.
-func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logger log.Logger, r Register) (*khttp.Server, func()) {
+func NewHttpServer(config *conf.HTTP, logCfg *conf.Recorder, tracerProvider trace.TracerProvider, logger log.Logger, r Register) (*khttp.Server, func()) {
 	loggerWithMethod := log.With(
 		logger,
 		"method",
@@ -53,6 +54,13 @@ func NewHttpServer(config *conf.HTTP, tracerProvider trace.TracerProvider, logge
 			serverLogging(loggerWithMethod),
 		),
 		khttp.Filter(
+			recorder.HTTPFilter(
+				recorder.IsNewUser(IsNewUser),
+				recorder.FilePath(logCfg.FilePath),
+				recorder.MaxSize(logCfg.MaxSize),
+				recorder.MaxAge(logCfg.MaxAge),
+				recorder.MaxBackups(logCfg.MaxBackups),
+			), // this filter request in the first place.
 			traceFilter(tracerProvider),
 			cparam.Filter(),
 			denv.HTTPFilter,

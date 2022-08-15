@@ -17,6 +17,7 @@ type Bootstrap struct {
 	Clientset *Clientset
 	Qiniu     *qiniu.Config
 	Params    *Params
+	Recorder  *Recorder
 }
 
 type Params struct{}
@@ -44,4 +45,12 @@ type Clientset struct {
 	DataEnv                 string
 	OperationalBasicSvcAddr string
 	MaterialPos             string
+}
+
+type Recorder struct {
+	FilePath             string
+	MaxSize              int
+	MaxAge               int
+	MaxBackups           int
+	RegexpRecordeRouters []string
 }

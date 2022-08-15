@@ -29,3 +29,8 @@ clientSet:
     dataEnv: dns:///operations-data-env.operation-placing-system:9000
     operationalBasicSvcAddr: dns:///operational-basic.operation-placing-system:9000
 params:
+recorder:
+  filePath: /opt/logs/camera360.log
+  maxSize: 100
+  maxAge: 1
+  maxBackups: 5
