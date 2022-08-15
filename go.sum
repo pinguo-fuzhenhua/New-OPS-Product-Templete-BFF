@@ -384,6 +384,8 @@ github.com/pinguo-icc/kratos-library/v2 v2.1.9 h1:MeDkgFfsBkHQvC3wKSiIZSCdLykEF+
 github.com/pinguo-icc/kratos-library/v2 v2.1.9/go.mod h1:gdovZmx+/2txa0+2yKqs5ykXEkoOOc8p7baFSUwzbsg=
 github.com/pinguo-icc/material-positions-svc v0.0.0-20220812063732-1741217f012e h1:evfMgrAIOzZAm4MNss5s7fjuAXu5Sib1IDF9jf7Enxg=
 github.com/pinguo-icc/material-positions-svc v0.0.0-20220812063732-1741217f012e/go.mod h1:bfo94HhvLHhnJaPWM+rSBnwOsx0lH5nH3GAVpbCE370=
+github.com/pinguo-icc/material-positions-svc v0.0.0-20220815072448-57decc50e3b7 h1:sVRQrqJ9WyDoaJJlgLvaZCRtNMkURApBU3iL5BxRWiY=
+github.com/pinguo-icc/material-positions-svc v0.0.0-20220815072448-57decc50e3b7/go.mod h1:bfo94HhvLHhnJaPWM+rSBnwOsx0lH5nH3GAVpbCE370=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8 h1:YIYQufK5fGXM6J1ouhiLvS+5FGNThXt5UPD/Al8bmlA=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8/go.mod h1:yRNFTplvG5+OyPJQiPvBsgSXq7/E/juxq614PHZQ3mY=
 github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4 h1:R8fVIQg6oDhMUiRoZ0LXVdlOBrKwtIg+rvD9IsQ8+jk=

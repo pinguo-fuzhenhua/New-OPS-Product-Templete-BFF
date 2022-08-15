@@ -100,7 +100,7 @@ func (m *MaterialPositions) Materials(ctx khttp.Context) (interface{}, error) {
 
 	m.rewriteForUserData(ctx, in.UserData, cp)
 
-	placeResp, err := m.MP.PlaceMaterials(ctx, in)
+	placeResp, err := m.MP.PlaceMaterialsV2(ctx, in)
 	if err != nil {
 		return nil, kerr.InternalServer(err.Error(), "服务器请求发生错误")
 	}

@@ -12,7 +12,7 @@ require (
 	github.com/pinguo-icc/go-base/v2 v2.5.9
 	github.com/pinguo-icc/go-lib/v2 v2.0.2
 	github.com/pinguo-icc/kratos-library/v2 v2.1.9
-	github.com/pinguo-icc/material-positions-svc v0.0.0-20220812063732-1741217f012e
+	github.com/pinguo-icc/material-positions-svc v0.0.0-20220815072448-57decc50e3b7
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220630071125-878ed2a256c8
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220324081227-5d12f556cdf4
 	github.com/pinguo-icc/operations-data-env-svc v0.0.1
@@ -85,6 +85,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+
+// replace github.com/pinguo-icc/material-positions-svc => ../material-positions-svc
 
 //replace github.com/pinguo-icc/field-definitions => ../field-definitions-svc
 //replace github.com/pinguo-icc/operational-basic-svc => ../operational-basic-svc
