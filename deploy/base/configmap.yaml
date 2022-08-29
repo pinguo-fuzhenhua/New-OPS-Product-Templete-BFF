@@ -11,3 +11,5 @@ data:
   trace.aliConfig.endpoint: ""
   trace.aliConfig.instanceId: ops-trace-prod
   trace.aliConfig.project: ops-trace-prod
+  recorder.maxSize:
+  recorder.maxBackups:
