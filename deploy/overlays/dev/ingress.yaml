@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: app-camera360
-  name: camera360-bff
+  namespace: app-april
+  name: april-bff
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -10,16 +10,16 @@ metadata:
 spec:
   tls:
     - hosts:
-        - camera360-bff-dev.camera360.com
-      secretName: camera360.com
+        - april-bff-dev.april.com
+      secretName: april.com
   rules:
-    - host: camera360-bff-dev.camera360.com
+    - host: april-bff-dev.april.com
       http:
         paths:
           - path: "/"
             pathType: Prefix
             backend:
               service:
-                name: camera360-bff
+                name: april-bff
                 port:
                   number: 8000

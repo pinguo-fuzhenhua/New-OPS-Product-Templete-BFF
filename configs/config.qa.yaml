@@ -12,7 +12,7 @@ qiniu:
     url: https://cdn-qa-all.c360dn.com
     isPrivate: false
 recorder:
-  filePath: /opt/logs/camera360.log
+  filePath: /opt/logs/april.log
   maxSize: 100
   maxAge: 1
   maxBackups: 5

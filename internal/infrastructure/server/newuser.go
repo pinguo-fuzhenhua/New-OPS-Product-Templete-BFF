@@ -11,7 +11,7 @@ import (
 
 // 判断规则定义，不同产品可定义不同的规则
 var newUserRules = map[string]func(cp *cparam.Params, r *http.Request) bool{
-	"Camera360": func(cp *cparam.Params, _ *http.Request) bool {
+	"april": func(cp *cparam.Params, _ *http.Request) bool {
 		return newUserDependOnInitTimestampNatural(cp.InitStamp, int64(cp.UtcOffset), 1)
 	},
 }
