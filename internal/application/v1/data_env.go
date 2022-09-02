@@ -6,8 +6,8 @@ import (
 
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 	"github.com/pinguo-icc/operations-data-env-svc/api"
 )

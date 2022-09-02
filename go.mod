@@ -1,4 +1,4 @@
-module github.com/pinguo-icc/Camera360
+module github.com/pinguo-icc/April
 
 go 1.17
 

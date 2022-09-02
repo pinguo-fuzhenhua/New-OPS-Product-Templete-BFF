@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
 )
 
 // 各产品新老用户判断规则
