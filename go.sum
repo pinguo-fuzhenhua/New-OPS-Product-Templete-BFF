@@ -347,8 +347,6 @@ github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FI
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
-github.com/pinguo-icc/Camera360 v0.0.0-20220909063305-8a781fd4daee h1:b29JXd3jk7x9hTkvvt5pTULNltIcDNI+TE22E39MUI4=
-github.com/pinguo-icc/Camera360 v0.0.0-20220909063305-8a781fd4daee/go.mod h1:bxNT0Rj4J5dWC2nPiUGF91EkF873HPn51Z3702ogs4Y=
 github.com/pinguo-icc/bmallsdk v1.0.27 h1:aXglDkQFB5m0Ug8Dh0hPTGBzDPwv6dfhon9l+rStaC4=
 github.com/pinguo-icc/bmallsdk v1.0.27/go.mod h1:rJj7MzH+lV20O1hJz0qxCTvroF/0mbBVYvAdPjvTR0U=
 github.com/pinguo-icc/field-definitions v0.0.0-20220902013323-1f7c90e48137 h1:cMzW2up9K9BzQW6OTvsJznmg7OwglVh/oeVzWnu39kU=

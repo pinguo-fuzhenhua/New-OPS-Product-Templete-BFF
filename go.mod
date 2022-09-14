@@ -8,7 +8,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/pinguo-icc/Camera360 v0.0.0-20220909063305-8a781fd4daee
 	github.com/pinguo-icc/field-definitions v0.0.0-20220902013323-1f7c90e48137
 	github.com/pinguo-icc/go-base/v2 v2.5.16
 	github.com/pinguo-icc/go-lib/v2 v2.1.7
