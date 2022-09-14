@@ -19,7 +19,7 @@ qiniu:
     url: https://cdn-qa-all.c360dn.com
     isPrivate: false
 recorder:
-  filePath: ./logs/April.log
+  filePath: ./logs/april.log
   maxSize: 30
   maxAge: 7
   maxBackups: 2

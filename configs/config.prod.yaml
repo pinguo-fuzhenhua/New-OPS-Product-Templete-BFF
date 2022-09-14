@@ -1,5 +1,5 @@
 app:
-    name: &appName April-bff
+    name: &appName april-bff
     env: &appEnv prod
 http:
     address: 0.0.0.0:8000
@@ -31,7 +31,7 @@ clientSet:
     materialPos: dns:///material-positions-v2.operation-placing-system:9000
 params:
 recorder:
-  filePath: /opt/logs/April.log
+  filePath: /opt/logs/april.log
   maxSize: 100
   maxAge: 1
   maxBackups: 5
