@@ -39,13 +39,16 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	{
 		v1.GET("/operational-positions", H(rd.OPos.PullByCodes))
 		v1.GET("/json-config-show", H(rd.OpBasic.Show))
-
-		v1.GET("/material-positions/{position}/categories", H(rd.Mpos.Categories))
-		v1.GET("/material-positions/{position}/materials", H(rd.Mpos.Materials))
 	}
 
 	{
 		// 数据环境
 		v1.GET("/env", H(rd.DataEnv.ListEnv))
+	}
+
+	v2 := r.Group("/v2")
+	{
+		v2.GET("/material-positions/{position}/categories", H(rd.Mpos.Categories))
+		v2.GET("/material-positions/{position}/materials", H(rd.Mpos.Materials))
 	}
 }
