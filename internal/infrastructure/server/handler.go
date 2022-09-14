@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/render"
+	"github.com/pinguo-icc/April/internal/infrastructure/render"
 	"github.com/pinguo-icc/go-base/v2/iuser"
 )
 

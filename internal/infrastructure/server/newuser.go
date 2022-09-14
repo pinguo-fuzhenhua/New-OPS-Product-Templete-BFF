@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
 )
 
 // 各产品新老用户判断规则
 
 // 判断规则定义，不同产品可定义不同的规则
 var newUserRules = map[string]func(cp *cparam.Params, r *http.Request) bool{
-	"Camera360": func(cp *cparam.Params, _ *http.Request) bool {
+	"April": func(cp *cparam.Params, _ *http.Request) bool {
 		return newUserDependOnInitTimestampNatural(cp.InitStamp, int64(cp.UtcOffset), 1)
 	},
 }

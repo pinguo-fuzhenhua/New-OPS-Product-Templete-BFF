@@ -6,8 +6,8 @@ import (
 
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 	"github.com/pinguo-icc/operations-data-env-svc/api"
 )
@@ -32,7 +32,7 @@ func (o *DataEnv) ListEnv(ctx khttp.Context) (interface{}, error) {
 
 func (o *DataEnv) ignoreEnv(ctx khttp.Context) bool {
 	cp := cparam.FromContext(ctx)
-	if strings.ToLower(cp.AppID) == "camera360" && strings.ToLower(cp.Platform) == "ios" && cp.AppVersion == "9.9.91" {
+	if strings.ToLower(cp.AppID) == "April" && strings.ToLower(cp.Platform) == "ios" && cp.AppVersion == "9.9.91" {
 		return true
 	}
 

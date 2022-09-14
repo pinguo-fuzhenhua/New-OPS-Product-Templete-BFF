@@ -11,7 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
+	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	mpos "github.com/pinguo-icc/material-positions-svc/api"
 	opbasic "github.com/pinguo-icc/operational-basic-svc/api"

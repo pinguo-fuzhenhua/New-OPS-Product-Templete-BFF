@@ -1,17 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: app-camera360
-  name: camera360-bff
+  namespace: app-April
+  name: April-bff
 spec:
   rules:
-    - host: camera360-bff-k8s.camera360.com
+    - host: April-bff-k8s.April.com
       http:
         paths:
           - path: "/"
             pathType: Prefix
             backend:
               service:
-                name: camera360-bff
+                name: April-bff
                 port:
                   number: 8000

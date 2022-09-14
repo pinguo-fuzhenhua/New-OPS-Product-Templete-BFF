@@ -2,9 +2,9 @@ package infrastructure
 
 import (
 	"github.com/google/wire"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/April/internal/infrastructure/conf"
+	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	ptrace "github.com/pinguo-icc/kratos-library/v2/trace"
 )
 

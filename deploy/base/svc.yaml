@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: app-camera360
-  name: camera360-bff
+  namespace: app-April
+  name: April-bff
   # annotations:
   #   prometheus.io/scrape: "true"
   #   prometheus.io/port: "9000"
@@ -14,4 +14,4 @@ spec:
       protocol: TCP
       targetPort: 8000
   selector:
-    app: camera360-bff
+    app: April-bff

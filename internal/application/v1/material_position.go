@@ -6,8 +6,8 @@ import (
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/cparam"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	mpsvc "github.com/pinguo-icc/material-positions-svc/api"
 )

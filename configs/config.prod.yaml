@@ -1,5 +1,5 @@
 app:
-    name: &appName camera360-bff
+    name: &appName April-bff
     env: &appEnv prod
 http:
     address: 0.0.0.0:8000
@@ -31,7 +31,7 @@ clientSet:
     materialPos: dns:///material-positions-v2.operation-placing-system:9000
 params:
 recorder:
-  filePath: /opt/logs/camera360.log
+  filePath: /opt/logs/April.log
   maxSize: 100
   maxAge: 1
   maxBackups: 5

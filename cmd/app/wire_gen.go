@@ -9,12 +9,12 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pinguo-icc/Camera360/internal/application"
-	"github.com/pinguo-icc/Camera360/internal/application/v1"
-	"github.com/pinguo-icc/Camera360/internal/domain"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/conf"
-	"github.com/pinguo-icc/Camera360/internal/infrastructure/server"
+	"github.com/pinguo-icc/April/internal/application"
+	"github.com/pinguo-icc/April/internal/application/v1"
+	"github.com/pinguo-icc/April/internal/domain"
+	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/April/internal/infrastructure/conf"
+	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
