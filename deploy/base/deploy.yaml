@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: app-April
-  name: April-bff
+  namespace: app-april
+  name: april-bff
   annotations:
     deployment.kubernetes.io/revision: "2"
     prometheus.io/scrape: "true"
   labels:
-    app: April-bff
+    app: april-bff
     version: v1
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: April-bff
+      app: april-bff
   strategy:
     rollingUpdate:
       maxSurge: 20%
@@ -23,7 +23,7 @@ spec:
   template:
     metadata:
       labels:
-        app: April-bff
+        app: april-bff
     spec:
       containers:
         - env:
@@ -33,7 +33,7 @@ spec:
               value: "400"
           image: mirror.camera360.com
           imagePullPolicy: IfNotPresent
-          name: April-bff
+          name: april-bff
           command: ["/app/bin/app", "-env", "prod"]
           ports:
             - containerPort: 8000
@@ -41,7 +41,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 2000m
+              cpu: 500m
               memory: 500Mi
             requests:
               cpu: 50m
@@ -49,7 +49,7 @@ spec:
           volumeMounts:
             - mountPath: /etc/localtime
               name: volume-localtime
-            - name: April-bff-configmap
+            - name: april-bff-configmap
               mountPath: /app-config
               readOnly: true
           livenessProbe:
@@ -80,6 +80,6 @@ spec:
             path: /etc/localtime
             type: ""
           name: volume-localtime
-        - name: April-bff-configmap
+        - name: april-bff-configmap
           configMap:
-            name: April-bff-configmap
+            name: april-bff-configmap

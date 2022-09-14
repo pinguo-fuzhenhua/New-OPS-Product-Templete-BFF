@@ -32,7 +32,7 @@ func (o *DataEnv) ListEnv(ctx khttp.Context) (interface{}, error) {
 
 func (o *DataEnv) ignoreEnv(ctx khttp.Context) bool {
 	cp := cparam.FromContext(ctx)
-	if strings.ToLower(cp.AppID) == "April" && strings.ToLower(cp.Platform) == "ios" && cp.AppVersion == "9.9.91" {
+	if strings.ToLower(cp.AppID) == "april" && strings.ToLower(cp.Platform) == "ios" && cp.AppVersion == "9.9.91" {
 		return true
 	}
 
