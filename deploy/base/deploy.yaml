@@ -10,7 +10,7 @@ metadata:
     app: april-bff
     version: v1
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -41,7 +41,7 @@ spec:
               protocol: TCP
           resources:
             limits:
-              cpu: 2000m
+              cpu: 500m
               memory: 500Mi
             requests:
               cpu: 50m

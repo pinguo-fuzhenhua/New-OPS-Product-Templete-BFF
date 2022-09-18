@@ -51,6 +51,7 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 				"locale":    cp.Locale,
 				"vipstatus": ctx.Form().Get("vipStatus"),
 			},
+			ForceUserGroupID: cp.MockUserGroupID,
 		},
 	}
 

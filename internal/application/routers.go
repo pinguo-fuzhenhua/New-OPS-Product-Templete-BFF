@@ -20,6 +20,7 @@ type RouterDefines struct {
 	OPos    *v1.OperationalPos
 	DataEnv *v1.DataEnv
 	OpBasic *v1.JsonConfig
+	Mpos    *v1.MaterialPositions
 }
 
 func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
@@ -43,5 +44,12 @@ func (rd *RouterDefines) RouteRegister(r *khttp.Router) {
 	{
 		// 数据环境
 		v1.GET("/env", H(rd.DataEnv.ListEnv))
+	}
+
+	v2 := r.Group("/v2")
+	{
+		v2.GET("/material-positions/{position}/categories", H(rd.Mpos.Categories))
+		v2.GET("/material-positions/{position}/materials", H(rd.Mpos.Materials))
+		v2.GET("/material-positions/material/detail", H(rd.Mpos.MaterialDetail))
 	}
 }

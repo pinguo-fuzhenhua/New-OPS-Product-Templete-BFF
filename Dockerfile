@@ -1,4 +1,4 @@
-FROM mirror-pub.camera360.com/base/golang-builder:1.17.0 as builder
+FROM mirror-pub.camera360.com/base/golang-builder:1.18.0.0 as builder
 COPY . /app
 WORKDIR /app
 # ENV GOPROXY=https://goproxy.cn
