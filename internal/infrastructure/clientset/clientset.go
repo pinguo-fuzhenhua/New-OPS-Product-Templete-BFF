@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/selector/wrr"
@@ -19,6 +18,9 @@ import (
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
+
+	kierr "github.com/pinguo-icc/kratos-library/v2/ierr"
+	klog "github.com/pinguo-icc/kratos-library/v2/log"
 )
 
 // ClientSet gRPC Client Set
@@ -103,7 +105,9 @@ func newConnection(logger log.Logger, traceProvider trace.TracerProvider, connDa
 			kgrpc.WithMiddleware(
 				recovery.Recovery(recovery.WithLogger(logger)),
 				tracing.Client(tracing.WithTracerProvider(traceProvider)),
-				logging.Client(logger),
+				klog.ClinetMiddleware(logger),
+				// 顺序要求，需要先将grpc错误转换为自定义错误 在记录日志
+				kierr.GRPCClientMiddleware(),
 			),
 		}
 		clientOpts = append(clientOpts, connData[i].clientOpts...)

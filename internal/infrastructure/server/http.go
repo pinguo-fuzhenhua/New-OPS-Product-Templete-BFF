@@ -13,7 +13,9 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/go-base/v2/ierr"
 	"github.com/pinguo-icc/go-base/v2/recorder"
+	klog "github.com/pinguo-icc/kratos-library/v2/log"
 	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -51,7 +53,7 @@ func NewHttpServer(config *conf.HTTP, logCfg *conf.Recorder, tracerProvider trac
 		khttp.ErrorEncoder(buildErrorEncoder(logger)),
 		khttp.Middleware(
 			recovery.Recovery(recovery.WithLogger(loggerWithMethod)),
-			serverLogging(loggerWithMethod),
+			klog.ServerMiddleware(loggerWithMethod, klog.WithExtractError(extractError)),
 		),
 		khttp.Filter(
 			recorder.HTTPFilter(
@@ -90,8 +92,18 @@ func buildErrorEncoder(logger log.Logger) khttp.EncodeErrorFunc {
 			Code    int    `json:"code"`
 			Message string `json:"message"`
 		}
-		se := kerr.FromError(err)
-		resp := &errResp{Code: int(se.Code), Message: se.Message}
+		var httpCode int
+		resp := new(errResp)
+		if ie, ok := ierr.FromError(err); ok {
+			resp.Code = ie.SubCode
+			resp.Message = ie.Message
+			httpCode = ie.Code
+		} else {
+			se := kerr.FromError(err)
+			resp.Code = int(se.Code)
+			resp.Message = se.Message
+			httpCode = int(se.Code)
+		}
 		body, merr := errCodec.Marshal(resp)
 		if merr != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -99,7 +111,10 @@ func buildErrorEncoder(logger log.Logger) khttp.EncodeErrorFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(int(se.Code))
+		if httpCode >= 1000 {
+			httpCode = ierr.CustomizeCode
+		}
+		w.WriteHeader(int(httpCode))
 		wlen, werr := w.Write(body)
 		log.WithContext(r.Context(), logger).Log(log.LevelWarn, "b_err", err, "w_len", wlen, "w_err", werr)
 	}

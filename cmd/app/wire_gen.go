@@ -36,6 +36,7 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	activitiesParser := domain.NewActivitiesParser(logger, parserFactory, factory)
 	operationalPos := &v1.OperationalPos{
 		ClientSet: clientSet,
+		Logger:    logger,
 		Parser:    activitiesParser,
 	}
 	dataEnv := &v1.DataEnv{

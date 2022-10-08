@@ -1,10 +1,12 @@
 package v1
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-kratos/kratos/v2/log"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/April/internal/domain"
 	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
@@ -13,6 +15,7 @@ import (
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	opapi "github.com/pinguo-icc/operational-positions-svc/api"
+	"golang.org/x/text/language"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -20,7 +23,7 @@ import (
 
 type OperationalPos struct {
 	*clientset.ClientSet
-
+	Logger log.Logger
 	Parser *domain.ActivitiesParser
 }
 
@@ -62,7 +65,21 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 		in.UserData.Properties["fornewuser"] = "1"
 	}
 	o.rewriteForPreview(ctx, in)
-	langMatcher, err := fdpkg.NewLanguageMatcher(cp.Language, cp.Locale)
+	lang := cp.Language
+	locale := cp.Locale
+	if _, err := language.Parse(cp.Language); err != nil {
+		lang = ""
+		_ = o.Logger.Log(log.LevelWarn,
+			"method", "OperationalPos.PullByCodes",
+			"msg", fmt.Sprintf("common params pg-language=%s parse err=%s", cp.Language, err.Error()))
+	}
+	if _, err := language.Parse(cp.Locale); err != nil {
+		locale = ""
+		_ = o.Logger.Log(log.LevelInfo,
+			"method", "OperationalPos.PullByCodes",
+			"msg", fmt.Sprintf("common params pg-locale=%s parse err=%s", cp.Locale, err.Error()))
+	}
+	langMatcher, err := fdpkg.NewLanguageMatcher(lang, locale)
 	if err != nil {
 		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
 	}
