@@ -7,13 +7,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/go-kratos/kratos/v2/log"
 	"hash/fnv"
 	"strconv"
 
+	"github.com/go-kratos/kratos/v2/log"
+
+	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
+	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	"golang.org/x/text/language"
 )
@@ -53,9 +56,13 @@ var parseOpts = []fdpkg.ParseOption{
 	fdpkg.WithConcise(true),
 }
 
-func (a *Activity) ParseContents(parser *fdpkg.Parser, lm language.Matcher, contents *fdpkg.FieldsCollection) (err error) {
-	a.b, a.l, err = parser.Parse(lm, contents, parseOpts...)
-	return
+func (a *Activity) ParseContents(
+	parser *fdpkg.Parser, lm language.Matcher,
+	contents *fdpkg.FieldsCollection, opts ...fdpkg.ParseOption,
+) (err error) {
+	a.b, a.l, err = parser.Parse(lm, contents, opts...)
+
+	return err
 }
 
 func (a *Activity) MarshalJSON() ([]byte, error) {
@@ -126,13 +133,15 @@ func (a *Activity) writeEles(buf *bytes.Buffer, data []fdpkg.E) error {
 }
 
 type ActivitiesParser struct {
+	*conf.HTML5Config
+
 	pFac      *fdpkg.ParserFactory
 	trFactory *trace.Factory
 	logger    *log.Helper
 }
 
-func NewActivitiesParser(logger log.Logger, p *fdpkg.ParserFactory, trFactory *trace.Factory) *ActivitiesParser {
-	return &ActivitiesParser{logger: log.NewHelper(logger), pFac: p, trFactory: trFactory}
+func NewActivitiesParser(logger log.Logger, p *fdpkg.ParserFactory, trFactory *trace.Factory, h5cfg *conf.HTML5Config) *ActivitiesParser {
+	return &ActivitiesParser{logger: log.NewHelper(logger), pFac: p, trFactory: trFactory, HTML5Config: h5cfg}
 }
 
 func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data map[string]*oppapi.PlacingResponse_Plans) (map[string][]*ActivityPlan, error) {
@@ -163,9 +172,18 @@ func (ap *ActivitiesParser) Parse(ctx context.Context, lm language.Matcher, data
 			},
 		}
 
-		if err := tmp.ParseContents(fps[ac.FieldDefCode], lm, contents); err != nil {
+		scope, env := denv.EnvFromOutgoingContext(ctx)
+		if scope == "" || env == "" {
+			scope, env = denv.EnvFromIncomingContext(ctx)
+		}
+
+		if err := tmp.ParseContents(
+			fps[ac.FieldDefCode], lm, contents,
+			fdpkg.WithConcise(true), fdpkg.WithSplicer(ap.HTML5URLPrefix, scope, env),
+		); err != nil {
 			return nil, fmt.Errorf("parse activity failed, id=%s %w", ac.Id, err)
 		}
+
 		return tmp, nil
 	}
 

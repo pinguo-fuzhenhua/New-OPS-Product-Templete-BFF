@@ -13,6 +13,7 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/April/internal/infrastructure/render"
 	"github.com/pinguo-icc/go-base/v2/ierr"
 	"github.com/pinguo-icc/go-base/v2/recorder"
 	klog "github.com/pinguo-icc/kratos-library/v2/log"
@@ -88,12 +89,9 @@ func buildErrorEncoder(logger log.Logger) khttp.EncodeErrorFunc {
 	var errCodec = encoding.GetCodec(json.Name)
 
 	return func(w http.ResponseWriter, r *http.Request, err error) {
-		type errResp struct {
-			Code    int    `json:"code"`
-			Message string `json:"message"`
-		}
+
 		var httpCode int
-		resp := new(errResp)
+		resp := new(render.ErrorJSON)
 		if ie, ok := ierr.FromError(err); ok {
 			resp.Code = ie.SubCode
 			resp.Message = ie.Message

@@ -33,7 +33,8 @@ func initApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	fieldDefinitionsClient := clientSet.FieldDefinitionsClient
 	parserFactory := domain.NewParserFactory(fieldDefinitionsClient)
 	factory := trace.NewFactory(config)
-	activitiesParser := domain.NewActivitiesParser(logger, parserFactory, factory)
+	html5Config := bootstrap.HTML5
+	activitiesParser := domain.NewActivitiesParser(logger, parserFactory, factory, html5Config)
 	operationalPos := &v1.OperationalPos{
 		ClientSet: clientSet,
 		Logger:    logger,

@@ -8,13 +8,12 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/wire v0.5.0
 	github.com/gorilla/mux v1.8.0
-	github.com/pinguo-icc/field-definitions v0.0.0-20220905012726-87dd896ff792
+	github.com/pinguo-icc/field-definitions v0.0.0-20221011021317-9072d3e099d1
 	github.com/pinguo-icc/go-base/v2 v2.5.16
 	github.com/pinguo-icc/go-lib/v2 v2.1.7
 	github.com/pinguo-icc/kratos-library/v2 v2.1.16
-	github.com/pinguo-icc/material-positions-svc v0.0.0-20220906074012-e6415f124b6f
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220830073742-17a8c547b3cb
-	github.com/pinguo-icc/operational-positions-svc v0.0.0-20220517081046-f0bce17829b4
+	github.com/pinguo-icc/operational-positions-svc v0.0.0-20221011032152-2b6c2b2a4245
 	github.com/pinguo-icc/operations-data-env-svc v0.1.2
 	github.com/pinguo-icc/operations-material-svc v0.0.0-20220913015136-e03a2e2e6251
 	go.opentelemetry.io/otel v1.7.0

@@ -13,3 +13,5 @@ data:
   trace.aliConfig.project: ops-trace-prod
   recorder.maxSize:
   recorder.maxBackups:
+  html5.html5URLPrefix:
+

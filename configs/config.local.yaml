@@ -23,3 +23,5 @@ recorder:
   maxSize: 100
   maxAge: 1
   maxBackups: 2
+html5:
+    html5URLPrefix: https://xxxxxxx.c360dn.com

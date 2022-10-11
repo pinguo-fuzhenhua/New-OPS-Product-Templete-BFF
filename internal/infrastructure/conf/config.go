@@ -18,9 +18,14 @@ type Bootstrap struct {
 	Qiniu     *qiniu.Config
 	Params    *Params
 	Recorder  *Recorder
+	HTML5     *HTML5Config
 }
 
 type Params struct{}
+
+type HTML5Config struct {
+	HTML5URLPrefix string
+}
 
 func Load(env string) (*Bootstrap, error) {
 	out := new(Bootstrap)
@@ -44,7 +49,6 @@ type Clientset struct {
 	Material                string
 	DataEnv                 string
 	OperationalBasicSvcAddr string
-	MaterialPos             string
 }
 
 type Recorder struct {

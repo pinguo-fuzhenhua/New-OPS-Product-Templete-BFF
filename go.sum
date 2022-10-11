@@ -349,8 +349,8 @@ github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhEC
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pinguo-icc/bmallsdk v1.0.27 h1:aXglDkQFB5m0Ug8Dh0hPTGBzDPwv6dfhon9l+rStaC4=
 github.com/pinguo-icc/bmallsdk v1.0.27/go.mod h1:rJj7MzH+lV20O1hJz0qxCTvroF/0mbBVYvAdPjvTR0U=
-github.com/pinguo-icc/field-definitions v0.0.0-20220905012726-87dd896ff792 h1:V/zgPJzcY8FDqkTlBTQfr+ukfZgs1OfpXFieRdJq9RI=
-github.com/pinguo-icc/field-definitions v0.0.0-20220905012726-87dd896ff792/go.mod h1:ri9Z9lQlDr4v21bnjTWccXKGaTvDwmTlwv1vjSEvf7E=
+github.com/pinguo-icc/field-definitions v0.0.0-20221011021317-9072d3e099d1 h1:NC7NPLrc7eNcaL7QUw842GjpJuaDJyD43OMZyRVRUr4=
+github.com/pinguo-icc/field-definitions v0.0.0-20221011021317-9072d3e099d1/go.mod h1:ri9Z9lQlDr4v21bnjTWccXKGaTvDwmTlwv1vjSEvf7E=
 github.com/pinguo-icc/go-base/v2 v2.5.14/go.mod h1:6KcfXIK/1bknb7AFPKfZwdT7V2JjyWBdEao9MZFtdaE=
 github.com/pinguo-icc/go-base/v2 v2.5.16 h1:gwoCiv/bByHsO/WIhVtRNK+JdSpqC3C3F7AuyTndlEU=
 github.com/pinguo-icc/go-base/v2 v2.5.16/go.mod h1:6KcfXIK/1bknb7AFPKfZwdT7V2JjyWBdEao9MZFtdaE=
@@ -358,14 +358,12 @@ github.com/pinguo-icc/go-lib/v2 v2.1.7 h1:zWVGrbEUFMPXKZMizqUwlGnHX7TGgXshgB+i+1
 github.com/pinguo-icc/go-lib/v2 v2.1.7/go.mod h1:qajpvSw2uWYuxV34ueoOS7IwyW9WrLsI+t7Bf+xTP6o=
 github.com/pinguo-icc/kratos-library/v2 v2.1.16 h1:lFKLTUXCuLiUs6P6wD2OqaFJ8AZpCTiyfCFBGrZf9Ho=
 github.com/pinguo-icc/kratos-library/v2 v2.1.16/go.mod h1:zEHcuk8PiZtB6WKWCYPYEFGS+p75BdC5N+WYOYkYeyQ=
-github.com/pinguo-icc/material-positions-svc v0.0.0-20220906074012-e6415f124b6f h1:1VshkJSXHTIi3lf93KSrhnUkasc/FtFs29E53Xh2kiM=
-github.com/pinguo-icc/material-positions-svc v0.0.0-20220906074012-e6415f124b6f/go.mod h1:ede5auqt0vtTjob7ALpaR3t+CcSSFWHZNyYiKDGwwjQ=
 github.com/pinguo-icc/operate-history-svc v0.0.0-20220829061846-4f33621b88e2 h1:Pe+j7vOdLynmf9aSuwJzW8PGaQBr5Pmmdcg+q3IdKb8=
 github.com/pinguo-icc/operate-history-svc v0.0.0-20220829061846-4f33621b88e2/go.mod h1:0QY0JI8JSsgU3xkEl+lnwYfxFHIHASBOXz/Zr4JHDGA=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220830073742-17a8c547b3cb h1:SKOD2t/Xwjnasi89hkyofYVLSvnJGHroOTN/uNBijuk=
 github.com/pinguo-icc/operational-basic-svc v0.0.0-20220830073742-17a8c547b3cb/go.mod h1:f4APMkj4U7aurSCARiZzQhbtoLZrZPq3CI8W7Bef19Y=
-github.com/pinguo-icc/operational-positions-svc v0.0.0-20220517081046-f0bce17829b4 h1:M4drLfAh3T2m1s8m1S/8k3hpch+txzQDlckZTrte8uQ=
-github.com/pinguo-icc/operational-positions-svc v0.0.0-20220517081046-f0bce17829b4/go.mod h1:75+rsavSu/TgKZdIG5nVQx13vUR575wjhNA7Y6k4aFk=
+github.com/pinguo-icc/operational-positions-svc v0.0.0-20221011032152-2b6c2b2a4245 h1:kp61WMGVpHQYFQ3zFFoxf3z8SvMDivvdc+4eRQHWwEU=
+github.com/pinguo-icc/operational-positions-svc v0.0.0-20221011032152-2b6c2b2a4245/go.mod h1:yz6fZ7s0oyf7zOv/67jiYj89Ho5GUPzvpfzxkPEN5Mk=
 github.com/pinguo-icc/operations-data-env-svc v0.1.2 h1:EjsyzHckkrj1T81GEpdsGZmwe1kSR0t1PW4sw51UCuo=
 github.com/pinguo-icc/operations-data-env-svc v0.1.2/go.mod h1:EXR01zp+mlcjfYlWSf5YMnYi1qW1JybalQuZCjoWfhM=
 github.com/pinguo-icc/operations-material-svc v0.0.0-20220913015136-e03a2e2e6251 h1:VGnfO3xSoRnLOzZy7fYy4pVFTW06vwobmp8QwGkdzXo=

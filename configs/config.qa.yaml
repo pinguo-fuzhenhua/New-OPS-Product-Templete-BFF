@@ -16,3 +16,5 @@ recorder:
   maxSize: 100
   maxAge: 1
   maxBackups: 5
+html5:
+    html5URLPrefix: https://ops-h5-qa.camera360.com/t1
