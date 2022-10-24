@@ -6,10 +6,10 @@ import (
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
-	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	pver "github.com/pinguo-icc/go-base/v2/version"
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
+	"github.com/pinguo-icc/template/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/template/internal/infrastructure/server"
 )
 
 type MaterialPositions struct {

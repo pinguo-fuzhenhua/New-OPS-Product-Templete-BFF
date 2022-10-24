@@ -1,8 +1,8 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  namespace: app-april
-  name: april-bff-configmap
+  namespace: app-template
+  name: template-bff-configmap
 data:
   qiniu.accessKey: ak
   qiniu.secretKey: sk

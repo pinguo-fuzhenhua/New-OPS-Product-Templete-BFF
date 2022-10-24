@@ -10,9 +10,9 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	"github.com/pinguo-icc/kratos-library/v2/pdebug"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

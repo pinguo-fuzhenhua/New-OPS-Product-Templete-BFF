@@ -1,4 +1,4 @@
-module github.com/pinguo-icc/April
+module github.com/pinguo-icc/template
 
 go 1.18
 

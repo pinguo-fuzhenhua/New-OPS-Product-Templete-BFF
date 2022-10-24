@@ -10,12 +10,12 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/selector/wrr"
 	kgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
 	dataEnvApi "github.com/pinguo-icc/operations-data-env-svc/api"
 	opmapi "github.com/pinguo-icc/operations-material-svc/api"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 

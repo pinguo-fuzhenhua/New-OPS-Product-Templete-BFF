@@ -2,10 +2,10 @@ package infrastructure
 
 import (
 	"github.com/google/wire"
-	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
-	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	ptrace "github.com/pinguo-icc/kratos-library/v2/trace"
+	"github.com/pinguo-icc/template/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
+	"github.com/pinguo-icc/template/internal/infrastructure/server"
 )
 
 var ProviderSet = wire.NewSet(

@@ -11,13 +11,13 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
-	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
-	"github.com/pinguo-icc/April/internal/infrastructure/render"
 	"github.com/pinguo-icc/go-base/v2/ierr"
 	"github.com/pinguo-icc/go-base/v2/recorder"
 	klog "github.com/pinguo-icc/kratos-library/v2/log"
 	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
+	"github.com/pinguo-icc/template/internal/infrastructure/cparam"
+	"github.com/pinguo-icc/template/internal/infrastructure/render"
 	"go.opentelemetry.io/otel/trace"
 )
 

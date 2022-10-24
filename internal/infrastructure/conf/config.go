@@ -8,7 +8,7 @@ import (
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 )
 
-const Scope = "April"
+const Scope = "template"
 
 type Bootstrap struct {
 	App       *App

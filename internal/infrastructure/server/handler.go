@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/April/internal/infrastructure/render"
 	"github.com/pinguo-icc/go-base/v2/iuser"
+	"github.com/pinguo-icc/template/internal/infrastructure/render"
 )
 
 func HandlerFunc(handler interface{}) khttp.HandlerFunc {

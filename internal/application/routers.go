@@ -3,8 +3,8 @@ package application
 import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/gorilla/mux"
-	v1 "github.com/pinguo-icc/April/internal/application/v1"
-	"github.com/pinguo-icc/April/internal/infrastructure/server"
+	v1 "github.com/pinguo-icc/template/internal/application/v1"
+	"github.com/pinguo-icc/template/internal/infrastructure/server"
 )
 
 type Context = khttp.Context

@@ -1,5 +1,5 @@
 app:
-    name: &appName april-bff
+    name: &appName template-bff
     env: &appEnv prod
 http:
     address: 0.0.0.0:8000
@@ -30,7 +30,7 @@ clientSet:
     operationalBasicSvcAddr: dns:///operational-basic.operation-placing-system:9000
 params:
 recorder:
-  filePath: /opt/logs/april.log
+  filePath: /opt/logs/template.log
   maxSize: 100
   maxAge: 1
   maxBackups: 5

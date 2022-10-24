@@ -9,13 +9,13 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/pinguo-icc/April/internal/application"
-	"github.com/pinguo-icc/April/internal/application/v1"
-	"github.com/pinguo-icc/April/internal/domain"
-	"github.com/pinguo-icc/April/internal/infrastructure/clientset"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
-	"github.com/pinguo-icc/April/internal/infrastructure/server"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
+	"github.com/pinguo-icc/template/internal/application"
+	"github.com/pinguo-icc/template/internal/application/v1"
+	"github.com/pinguo-icc/template/internal/domain"
+	"github.com/pinguo-icc/template/internal/infrastructure/clientset"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
+	"github.com/pinguo-icc/template/internal/infrastructure/server"
 )
 
 // Injectors from wire.go:

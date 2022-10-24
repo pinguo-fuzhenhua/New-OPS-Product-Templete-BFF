@@ -30,7 +30,7 @@ func traceFilter(provider trace.TracerProvider) khttp.FilterFunc {
 			ctx, span := tracer.Start(r.Context(), pathTpl, trace.WithSpanKind(trace.SpanKindServer))
 			defer span.End()
 
-			attr := semconv.HTTPServerAttributesFromHTTPRequest("April", pathTpl, r)
+			attr := semconv.HTTPServerAttributesFromHTTPRequest("Template", pathTpl, r)
 			host, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err == nil {
 				if host != "" {

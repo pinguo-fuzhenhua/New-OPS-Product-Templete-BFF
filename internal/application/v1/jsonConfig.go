@@ -6,8 +6,8 @@ import (
 
 	kerr "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	"github.com/pinguo-icc/April/internal/infrastructure/cparam"
 	opbasic "github.com/pinguo-icc/operational-basic-svc/api"
+	"github.com/pinguo-icc/template/internal/infrastructure/cparam"
 )
 
 type JsonConfig struct {

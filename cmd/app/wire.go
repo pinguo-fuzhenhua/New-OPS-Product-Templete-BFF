@@ -9,10 +9,10 @@ import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	"github.com/pinguo-icc/April/internal/application"
-	"github.com/pinguo-icc/April/internal/domain"
-	infra "github.com/pinguo-icc/April/internal/infrastructure"
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
+	"github.com/pinguo-icc/template/internal/application"
+	"github.com/pinguo-icc/template/internal/domain"
+	infra "github.com/pinguo-icc/template/internal/infrastructure"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
 )
 
 func initApp(*conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {

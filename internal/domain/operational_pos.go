@@ -12,12 +12,12 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 
-	"github.com/pinguo-icc/April/internal/infrastructure/conf"
 	fdapi "github.com/pinguo-icc/field-definitions/api"
 	fdpkg "github.com/pinguo-icc/field-definitions/pkg"
 	"github.com/pinguo-icc/kratos-library/v2/trace"
 	"github.com/pinguo-icc/operational-basic-svc/pkg/denv"
 	oppapi "github.com/pinguo-icc/operational-positions-svc/api"
+	"github.com/pinguo-icc/template/internal/infrastructure/conf"
 	"golang.org/x/text/language"
 )
 

@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  namespace: app-april
-  name: april-bff
+  namespace: app-template
+  name: template-bff
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -10,16 +10,16 @@ metadata:
 spec:
   tls:
     - hosts:
-        - april-bff-dev.april.com
-      secretName: april.com
+        - template-bff-dev.template.com
+      secretName: template.com
   rules:
-    - host: april-bff-dev.april.com
+    - host: template-bff-dev.template.com
       http:
         paths:
           - path: "/"
             pathType: Prefix
             backend:
               service:
-                name: april-bff
+                name: template-bff
                 port:
                   number: 8000
