@@ -16,6 +16,10 @@ type MaterialPositions struct {
 	MP opmapi.MaterialPositionsClient
 }
 
+type CategoryResponse struct {
+	Items []*opmapi.PlaceResponse_Plan `json:"items"`
+}
+
 // /v2/material-positions/{position}/categories?vipStatus=
 func (m *MaterialPositions) Categories(ctx khttp.Context) (interface{}, error) {
 	cp := cparam.FromContext(ctx)
@@ -55,10 +59,22 @@ func (m *MaterialPositions) Categories(ctx khttp.Context) (interface{}, error) {
 	}
 
 	if len(placeResp.List) == 0 {
-		return materialPosEmptyResp, nil
+		return &CategoryResponse{Items: []*opmapi.PlaceResponse_Plan{}}, nil
 	}
 
-	return placeResp.List, nil
+	return &CategoryResponse{Items: placeResp.List}, nil
+}
+
+type MaterialRequest struct {
+	VIPStatus string `json:"vipStatus"`
+	Cates     string `json:"cates"`
+	PageType  string `json:"pageType"`
+	ScrollID  string `json:"scrollID"`
+	PageSize  int    `json:"pageSize"`
+}
+type MaterialResponse struct {
+	ScrollID string                       `json:"scrollID"`
+	Items    []*opmapi.PlaceResponse_Plan `json:"items"`
 }
 
 // /v2/material-positions/{position}/materials?vipStatus=&cates=
@@ -73,8 +89,13 @@ func (m *MaterialPositions) Materials(ctx khttp.Context) (interface{}, error) {
 		return nil, kerr.BadRequest(err.Error(), "请求参数版本号有误")
 	}
 
+	req := new(MaterialRequest)
+	if err := ctx.BindQuery(req); err != nil {
+		return nil, err
+	}
+
 	var cates []string
-	if _cates := ctx.Query().Get("cates"); _cates != "" {
+	if _cates := req.Cates; _cates != "" {
 		cates = strings.Split(_cates, ",")
 	}
 
@@ -89,13 +110,16 @@ func (m *MaterialPositions) Materials(ctx khttp.Context) (interface{}, error) {
 			Properties: map[string]string{
 				"language":  cp.Language,
 				"locale":    cp.Locale,
-				"vipstatus": ctx.Form().Get("vipStatus"),
+				"vipstatus": req.VIPStatus,
 			},
 			Language:  cp.Language,
 			UtcOffset: int32(cp.UtcOffset),
 		},
 		Prefetch: 72,
 		Cates:    cates,
+		PageType: req.PageType,
+		ScrollID: req.ScrollID,
+		PageSize: int64(req.PageSize),
 	}
 
 	m.rewriteForUserData(ctx, in.UserData, cp)
@@ -106,10 +130,10 @@ func (m *MaterialPositions) Materials(ctx khttp.Context) (interface{}, error) {
 	}
 
 	if len(placeResp.List) == 0 {
-		return materialPosEmptyResp, nil
+		return &MaterialResponse{ScrollID: "", Items: []*opmapi.PlaceResponse_Plan{}}, nil
 	}
 
-	return placeResp.List, nil
+	return &MaterialResponse{ScrollID: placeResp.ScrollID, Items: placeResp.List}, nil
 }
 
 func (m *MaterialPositions) rewriteForUserData(ctx khttp.Context, in *opmapi.UserData, cp *cparam.Params) {

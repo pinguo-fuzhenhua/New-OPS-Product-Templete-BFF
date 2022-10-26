@@ -15,7 +15,7 @@ require (
 	github.com/pinguo-icc/operational-basic-svc v0.0.0-20220830073742-17a8c547b3cb
 	github.com/pinguo-icc/operational-positions-svc v0.0.0-20221011032152-2b6c2b2a4245
 	github.com/pinguo-icc/operations-data-env-svc v0.1.2
-	github.com/pinguo-icc/operations-material-svc v0.0.0-20220913015136-e03a2e2e6251
+	github.com/pinguo-icc/operations-material-svc v0.0.0-20221026062216-854c837d2dde
 	go.opentelemetry.io/otel v1.7.0
 	go.opentelemetry.io/otel/trace v1.7.0
 	go.uber.org/zap v1.21.0

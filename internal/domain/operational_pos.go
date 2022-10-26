@@ -236,7 +236,6 @@ func (ap *ActivitiesParser) getFieldParser(ctx context.Context, data map[string]
 				dataset[ac.FieldDefCode] = struct{}{}
 				fDefIDs = append(fDefIDs, ac.FieldDefCode)
 			}
-
 		}
 	}
 
