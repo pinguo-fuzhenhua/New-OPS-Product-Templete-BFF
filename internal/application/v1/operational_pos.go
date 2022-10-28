@@ -66,20 +66,13 @@ func (o *OperationalPos) PullByCodes(ctx khttp.Context) (interface{}, error) {
 	}
 	o.rewriteForPreview(ctx, in)
 	lang := cp.Language
-	locale := cp.Locale
 	if _, err := language.Parse(cp.Language); err != nil {
 		lang = ""
 		_ = o.Logger.Log(log.LevelWarn,
 			"method", "OperationalPos.PullByCodes",
 			"msg", fmt.Sprintf("common params pg-language=%s parse err=%s", cp.Language, err.Error()))
 	}
-	if _, err := language.Parse(cp.Locale); err != nil {
-		locale = ""
-		_ = o.Logger.Log(log.LevelInfo,
-			"method", "OperationalPos.PullByCodes",
-			"msg", fmt.Sprintf("common params pg-locale=%s parse err=%s", cp.Locale, err.Error()))
-	}
-	langMatcher, err := fdpkg.NewLanguageMatcher(lang, locale)
+	langMatcher, err := fdpkg.NewLanguageMatcher(lang, "")
 	if err != nil {
 		return nil, kerr.BadRequest(err.Error(), "client language, locale invalid")
 	}
